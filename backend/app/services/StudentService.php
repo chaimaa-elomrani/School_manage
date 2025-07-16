@@ -54,8 +54,8 @@ class StudentService{
     public function getById($id){
         $stmt = $this->pdo->prepare('SELECT *FROM students  WHERE id = :id'); 
         $stmt->execute(['id' => $id]); 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return new Student($row);
+        $student = $stmt->fetch(PDO::FETCH_ASSOC);
+        return  $student ;
     }
 
 
@@ -73,7 +73,7 @@ class StudentService{
         $stmt->execute([
             'name' => $student->getName(),// on utilise les getters de la classe Student pour récupérer les données de l'étudiant
             'email' => $student->getEmail(),
-            'role' => $student->getRole(),
+            'role' => $student->getRole(), //we use getters instead of setters  because we want to update the data of the student not to create a new student
             'studentNumber' => $student->getStudentNumber(),
             'class' => $student->getClass(),
             'abscence' => $student->getAbsence(),
