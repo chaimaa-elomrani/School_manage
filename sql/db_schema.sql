@@ -4,7 +4,7 @@ CREATE TABLE person (
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20),
-    type ENUM('student', 'teacher', 'parent', 'admin') NOT NULL
+    role ENUM('student', 'teacher', 'parent', 'admin') NOT NULL
 );
 
 CREATE TABLE classes (
