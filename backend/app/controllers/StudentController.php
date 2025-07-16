@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . './models/Student.php';
-
 // here we should work with the concept of SRP, OCP and factory method in the design pattern wich are 
 // SRP: Single Responsibility Principle c'est a dire que chaque classe doit avoir une seule responsabilité
 // OCP: Open-Closed Principle c'est a dire que les classes doivent être ouvertes pour l'extension mais fermées
