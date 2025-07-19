@@ -79,7 +79,7 @@ class StudentController
 
         try {
             $student = PersonFactory::createPerson($input['role'] ?? 'student', $input); // ($data['role'], $data) this means that we are passing the role and the data to the createPerson method
-            $result = $this->studentService->update($student);
+            $result = $this->studentService->update($student); 
             echo json_encode(['message' => 'Student updated successfully', 'data' => $result]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
