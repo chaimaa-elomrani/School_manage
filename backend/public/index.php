@@ -1,16 +1,11 @@
 <?php
 
-// Enable error reporting for development
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/db.php';
 
-// Set timezone
-date_default_timezone_set('UTC');
+use Core\Router;
 
-// Load autoloader
-require_once __DIR__ . '/../app/autoload.php';
+$router = new Router();
 
-// Load and dispatch routes
-$router = require_once __DIR__ . '/../routes/web.php';
-$router->dispatch();
+require_once __DIR__ . '/../routes/web.php';
+$router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

@@ -1,45 +1,38 @@
 <?php
 
-namespace Core ; 
+namespace Core;
 
-use PDO ; 
-use PDOException ; 
+use PDO;
+use PDOException;
 
 class Db {
+    private static ?PDO $instance = null;
 
-    // instanciation unique (Singleton)
-    private static ?PDO $instance = null ; 
-
-    // pour empêcher l'instanciation directe
     private function __construct(){}
 
-    public static function connection() : PDO {
-
+    public static function connection(): PDO {
         if(self::$instance !== null){
-            return self::$instance ;
+            return self::$instance;
         }
 
         $host = 'localhost';
-        $dbname = 'school_manage' ; 
-        $username = 'root'; 
+        $dbname = 'school_manage';
+        $username = 'root';
         $password = '';
 
-
         try{
+            // Fix: Remove spaces in DSN
+            $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 
-            // data source name 
-            $dsn = "mysql:host= $host; dbname= $dbname ; charset=utf8mb4" ;
-
-            // creation de l'objet pdo 
-            self::$instance = new PDO($dsn , $username , $password, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION , // exception
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,// pas de conection persistante 
-                PDO::ATTR_PERSISTENT => false   // pas de connection persistante
-            ]); 
+            self::$instance = new PDO($dsn, $username, $password, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_PERSISTENT => false
+            ]);
         }catch (PDOException $err){
-            error_log($err->getMessage()); 
-            die('erreur dans config/db , la connection avec la base de données');
+            error_log($err->getMessage());
+            die('Database connection error: ' . $err->getMessage());
         }
-        return self::$instance; 
+        return self::$instance;
     }
 }

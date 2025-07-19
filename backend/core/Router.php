@@ -1,5 +1,8 @@
 <?php
 
+// explation of this file with details : 
+// this file is the core of the application it is the router of the application it is the one that is responsible for routing the requests to the appropriate controller and action
+
 namespace Core ;
 
 class Router{

@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Models;
+use App\Interfaces\IPerson;
+use App\Interfaces\ITeacher;
+
 class Teacher implements IPerson, ITeacher{
 
 	private $id;

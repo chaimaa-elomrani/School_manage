@@ -1,5 +1,11 @@
 <?php
 
+namespace App\Controllers;
+
+use App\Models\Teacher;
+use App\Services\TeacherService;
+use App\Factories\PersonFactory;
+use Core\Db;
 
 class TeacherController{
     private $teacherService;
@@ -38,3 +44,4 @@ class TeacherController{
 
     
 }
+

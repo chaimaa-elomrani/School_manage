@@ -1,8 +1,12 @@
 <?php
-require_once __DIR__ . '/../models/Student.php';
-require_once __DIR__ . '/../models/Teacher.php';
-class PersonFactory{
 
+namespace App\Factories;
+
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Interfaces\IPerson;
+
+class PersonFactory{
     public static function createPerson(string $role, array $data): ?IPerson
     {
         if ($role === 'student') {

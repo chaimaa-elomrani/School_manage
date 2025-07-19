@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Services;
+
+use App\Models\Student;
+use PDO;
+
 class StudentService{
 
     private $pdo; 
@@ -9,16 +14,35 @@ class StudentService{
     }
 
     public function save(Student $student){
-        $stmt = $this->pdo->prepare('INSERT INTO students (name, email , role , studentNumber , class , abscencen ) VALUES (:name, :email , :role , :studentNumber , :abscence'); 
-        $stmt->execute([
-            $student->getName(),
-            $student->getEmail(),
-            $student->getRole(),
-            $student->getStudentNumber(),
-            $student->getClass(),
-            $student->getAbsence()
-        ]); 
-        return $student ; 
+        $this->pdo->beginTransaction();
+        
+        try {
+            // Insert into person table first
+            $stmt = $this->pdo->prepare('INSERT INTO person (first_name, last_name, email, phone, role) VALUES (:first_name, :last_name, :email, :phone, :role)');
+            $stmt->execute([
+                'first_name' => $student->getFirstName(),
+                'last_name' => $student->getLastName(),
+                'email' => $student->getEmail(),
+                'phone' => $student->getPhone(),
+                'role' => $student->getRole()
+            ]);
+            
+            $person_id = $this->pdo->lastInsertId();
+            
+            // Insert into students table
+            $stmt = $this->pdo->prepare('INSERT INTO students (person_id, student_number, class_id) VALUES (:person_id, :student_number, :class_id)');
+            $stmt->execute([
+                'person_id' => $person_id,
+                'student_number' => $student->getStudentNumber(),
+                'class_id' => $student->getClassId()
+            ]);
+            
+            $this->pdo->commit();
+            return $student;
+        } catch (\Exception $e) {
+            $this->pdo->rollback();
+            throw $e;
+        }
     }
     
     // explication profonde de la méthode save():
@@ -29,12 +53,19 @@ class StudentService{
     // les getname etc se sont les getters de la classe Student il se trouve  dejat dans le model Student  , on les ai utiliser ici pour recuperer les données de l'étudiant
 
 
-    public function getAll(){
-        $stmt = $this->pdo->query('SELECT * FROM students'); 
+    public function getAll(){   
+        $stmt = $this->pdo->prepare('
+            SELECT s.id, s.person_id, s.student_number, s.class_id,
+                   p.first_name, p.last_name, p.email, p.phone, p.role
+            FROM students s 
+            JOIN person p ON s.person_id = p.id
+        '); 
+        $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC); 
         $students = []; 
+        
         foreach($rows as $row){
-            $students[] = new Student ($row );
+            $students[] = new Student($row);
         }
 
         return $students ; 
@@ -52,10 +83,21 @@ class StudentService{
 
 
     public function getById($id){
-        $stmt = $this->pdo->prepare('SELECT *FROM students  WHERE id = :id'); 
+        $stmt = $this->pdo->prepare('
+            SELECT s.id, s.person_id, s.student_number, s.class_id,
+                   p.first_name, p.last_name, p.email, p.phone, p.role
+            FROM students s 
+            JOIN person p ON s.person_id = p.id 
+            WHERE s.id = :id
+        '); 
         $stmt->execute(['id' => $id]); 
-        $student = $stmt->fetch(PDO::FETCH_ASSOC);
-        return  $student ;
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($row) {
+            return new Student($row);
+        }
+        
+        return null;
     }
 
 
@@ -69,17 +111,34 @@ class StudentService{
     // the :id is a placeholder for the id passed in the URL
 
     public function update(Student $student){
-        $stmt =  $this->pdo->prepare('UPDATE students SET name = :name , email = :email , role = :role , studentNumber = :studentNumber , :class = :class , abscence = :abscense WHERE id = :id'); 
-        $stmt->execute([
-            'name' => $student->getName(),// on utilise les getters de la classe Student pour récupérer les données de l'étudiant
-            'email' => $student->getEmail(),
-            'role' => $student->getRole(), //we use getters instead of setters  because we want to update the data of the student not to create a new student
-            'studentNumber' => $student->getStudentNumber(),
-            'class' => $student->getClass(),
-            'abscence' => $student->getAbsence(),
-            'id' => $student->getId()
-        ]);
-        return $student ;
+        $this->pdo->beginTransaction();
+        
+        try {
+            // Update person table
+            $stmt = $this->pdo->prepare('UPDATE person SET first_name = :first_name, last_name = :last_name, email = :email, phone = :phone, role = :role WHERE id = :person_id');
+            $stmt->execute([
+                'first_name' => $student->getFirstName(),
+                'last_name' => $student->getLastName(),
+                'email' => $student->getEmail(),
+                'phone' => $student->getPhone(),
+                'role' => $student->getRole(),
+                'person_id' => $student->getPersonId()
+            ]);
+            
+            // Update students table
+            $stmt = $this->pdo->prepare('UPDATE students SET student_number = :student_number, class_id = :class_id WHERE id = :id');
+            $stmt->execute([
+                'student_number' => $student->getStudentNumber(),
+                'class_id' => $student->getClassId(),
+                'id' => $student->getId()
+            ]);
+            
+            $this->pdo->commit();
+            return $student;
+        } catch (\Exception $e) {
+            $this->pdo->rollback();
+            throw $e;
+        }
     }
 
 
@@ -93,7 +152,8 @@ class StudentService{
 
 
     public function delete($id){
-        $stmt =$this->pdo->prepare('DELETE FROM students WHERE id = :id'); 
+        // Delete from students table (person will be deleted by CASCADE)
+        $stmt = $this->pdo->prepare('DELETE FROM students WHERE id = :id'); 
         $stmt->execute(['id' => $id]);
         return true;
     }

@@ -1,5 +1,8 @@
 <?php
-Interface IPerson {
+
+namespace App\Interfaces;
+
+interface IPerson {
  
     public function  getId();
 

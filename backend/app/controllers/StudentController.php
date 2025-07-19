@@ -1,47 +1,105 @@
 <?php
-// here we should work with the concept of SRP, OCP and factory method in the design pattern wich are 
-// SRP: Single Responsibility Principle c'est a dire que chaque classe doit avoir une seule responsabilité
-// OCP: Open-Closed Principle c'est a dire que les classes doivent être ouvertes pour l'extension mais fermées
-//  pour la modification on veut dire par l'extension que on peut ajouter de nouvelles fonctionnalités sans modifier le code existant 
-// Factory method: c'est une méthode qui permet de créer des objets sans avoir à spécifier la classe exacte à instancier
+
+namespace App\Controllers;
+
+use App\Models\Student;
+use App\Services\StudentService;
+use App\Factories\PersonFactory;
+use Core\Db;
 
 class StudentController
 {
 
     private $studentService ; 
 
-    public function __construct(StudentService $studentService){ // the params are the dependencies of the class , dependencies are the classes that are used in the class
-        $this->studentService = $studentService; 
+    public function __construct(StudentService $studentService = null)
+    {
+        if ($studentService) {
+            $this->studentService = $studentService;
+        } else {
+            $pdo = Db::connection();
+            $this->studentService = new StudentService($pdo);
+        }
     }
 
 
-    public function create(array $data){
-        $student = PersonFactory::createPerson($data['role'], $data); 
-        $this->studentService->save($student);
-        return $student ; 
+    public function create(){
+        // Get data from request body for POST requests
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!$input) {
+            echo json_encode(['error' => 'Invalid JSON data']);
+            return;
+        }
+
+        try {
+            $student = PersonFactory::createPerson($input['role'] ?? 'student', $input); 
+            $result = $this->studentService->save($student);
+            echo json_encode(['message' => 'Student created successfully', 'data' => $result]);
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 
 
 
     public function getAll(){
-        $students = $this->studentService->getAll();
-        return $students;
+        try {
+            $students = $this->studentService->getAll();
+            $studentsArray = [];
+            foreach($students as $student) {
+                $studentsArray[] = $student->toArray();
+            }
+            echo json_encode(['message' => 'Students retrieved successfully', 'data' => $studentsArray]);
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 
     public function getById($id){
-        $student = $this->studentService->getById($id);
-        return $student;
+        try {
+            $student = $this->studentService->getById($id);
+            if ($student) {
+                echo json_encode(['message' => 'Student found', 'data' => $student->toArray()]);
+            } else {
+                echo json_encode(['error' => 'Student not found']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 
-    public function update(array $data){
-        $student = PersonFactory::createPerson($data['role'], $data); // ($data['role'], $data) this means that we are passing the role and the data to the createPerson method
-        $this->studentService->update($student);
-        return $student;
+    public function update(){
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!$input) {
+            echo json_encode(['error' => 'Invalid JSON data']);
+            return;
+        }
+
+        try {
+            $student = PersonFactory::createPerson($input['role'] ?? 'student', $input); // ($data['role'], $data) this means that we are passing the role and the data to the createPerson method
+            $result = $this->studentService->update($student);
+            echo json_encode(['message' => 'Student updated successfully', 'data' => $result]);
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 
-    public function delete($id){
-        $this->studentService->delete($id);
-        return true;
+    public function delete(){
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!$input || !isset($input['id'])) {
+            echo json_encode(['error' => 'Student ID is required']);
+            return;
+        }
+
+        try {
+            $result = $this->studentService->delete($input['id']);
+            echo json_encode(['message' => 'Student deleted successfully']);
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 
 

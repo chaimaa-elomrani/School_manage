@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Services;
+
+use App\Models\Teacher;
+use PDO;
+
 class TeacherService{
 
     private $pdo; 
