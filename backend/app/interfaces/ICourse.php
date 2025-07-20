@@ -5,6 +5,7 @@ interface ICourse{
 
     // getters
     public function getId();
+    public function getName();
     public function getTeacherId(); 
     public function getSubjectId();
     public function getRoomId();
@@ -13,9 +14,5 @@ interface ICourse{
     public function getCourseStartDate();
     public function getCourseEndDate();
 
-    // setters 
-    public function setDuration($duration);
-    public function setLevel($level);
-    public function setCourseStartDate($courseStartDate);
-    public function setCourseEndDate($courseEndDate);
+   
 }

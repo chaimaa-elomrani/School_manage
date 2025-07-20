@@ -6,20 +6,20 @@ use App\Interfaces\IRoom;
 class Room implements IRoom{
 
     private $id;
-    private $name;
+    private $number;
     private $level;
 
     public function __construct(array $data){
         $this->id = $data['id'] ?? null ; 
-        $this->name = $data['name'] ?? '';
+        $this->number = $data['number'] ?? '';
         $this->level = $data['level'] ?? '';
     }
 
     public function getId() { 
         return $this->id;
     }
-    public function getName() {
-        return $this->name;
+    public function getNumber() {
+        return $this->number;
     }
     public function getLevel() {
         return $this->level;
@@ -27,15 +27,10 @@ class Room implements IRoom{
     public function toArray() {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'number' => $this->number,
             'level' => $this->level
         ];
     }
 
-    public function setName($name) {
-        $this->name = $name;
-    }
-    public function setLevel($level) {
-        $this->level = $level;
-    }
+  
 }

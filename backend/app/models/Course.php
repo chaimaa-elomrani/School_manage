@@ -6,6 +6,7 @@ use App\Interfaces\ICourse;
 class Course implements ICourse{
 
     private $id;
+    private $name ; 
     private $teacher_id;
     private $subject_id;
     private $room_id;
@@ -26,6 +27,9 @@ class Course implements ICourse{
     }
 
 
+    public  function getName(){
+        return $this->name;
+    }
     public function getId(){
         return $this->id;
     }
@@ -51,20 +55,7 @@ class Course implements ICourse{
         return $this->end_date;
     }
 
-    // setters 
-
-    public function setDuration($duration){
-        $this->duration = $duration;
-    }
-    public function setLevel($level){
-        $this->level = $level;
-    }
-    public function setCourseStartDate($start_date){
-        $this->start_date = $start_date;
-    }
-    public function setCourseEndDate($end_date){
-        $this->end_date = $end_date;
-    }
+   
 
     public function toArray() {
         return [

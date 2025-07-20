@@ -14,7 +14,7 @@ class StudentService{
     }
 
     public function save(Student $student){
-        $this->pdo->beginTransaction();
+        $this->pdo->beginTransaction(); // beginTransaction comes from the PDO class  wich does ths work of starting a transaction , we mean by transactions the work of inserting data in the database in a secure way
         
         try {
             // Insert into person table first
@@ -37,7 +37,7 @@ class StudentService{
                 'class_id' => $student->getClassId()
             ]);
             
-            $this->pdo->commit();
+            $this->pdo->commit(); //commit means that the transaction is complete and the data is saved in the database 
             return $student;
         } catch (\Exception $e) {
             $this->pdo->rollback();
@@ -64,7 +64,7 @@ class StudentService{
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC); 
         $students = []; 
         
-        foreach($rows as $row){
+        foreach($rows as $row){ // on parcourt le tableau des données et on crée un nouvel étudiant pour chaque ligne
             $students[] = new Student($row);
         }
 
@@ -147,7 +147,7 @@ class StudentService{
     // 3. on exécute la requête préparée avec les données de l'étudiant
     // 4. on retourne l'étudiant mis à jour
     // 5. on utilise les getters de la classe Student pour récupérer les données de l'étudiant
-    // 6. on utilise les setters de la classe Student pour mettre à jour les données de l'étudiant
+    // 6. on a pas utilise les setters car on ne veut pas modifier les données de l'étudiant mais seulement les données de la personne
 
 
 
