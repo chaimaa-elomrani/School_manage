@@ -1,12 +1,14 @@
-<?php 
+<?php
 namespace App\Controllers;
 use App\Services\RoomService;
 use App\Models\Room;
 use Core\Db;
 
-class RoomController{
+class RoomController
+{
     private $roomService;
-    public function __construct(RoomService $roomService = null){
+    public function __construct(RoomService $roomService = null)
+    {
         if ($roomService) {
             $this->roomService = $roomService;
         } else {
@@ -15,9 +17,10 @@ class RoomController{
         }
     }
 
-    public function create(){
+    public function create()
+    {
         $input = json_decode(file_get_contents('php://input'), true);
-        
+
         if (!$input) {
             echo json_encode(['error' => 'Invalid JSON data']);
             return;
@@ -32,11 +35,12 @@ class RoomController{
         }
     }
 
-    public function getAll(){
+    public function getAll()
+    {
         try {
             $rooms = $this->roomService->getAll();
             $roomsArray = [];
-            foreach($rooms as $room) {
+            foreach ($rooms as $room) {
                 $roomsArray[] = $room->toArray();
             }
             echo json_encode(['message' => 'Rooms retrieved successfully', 'data' => $roomsArray]);
@@ -44,10 +48,11 @@ class RoomController{
             echo json_encode(['error' => $e->getMessage()]);
         }
 
-        
+
     }
 
-    public function getById($id){
+    public function getById($id)
+    {
         try {
             $room = $this->roomService->getById($id);
             if ($room) {
@@ -61,9 +66,10 @@ class RoomController{
         }
     }
 
-    public function update($id){
+    public function update($id)
+    {
         $input = json_decode(file_get_contents('php://input'), true);
-        
+
         if (!$input) {
             echo json_encode(['error' => 'Invalid JSON data']);
             return;
@@ -73,13 +79,14 @@ class RoomController{
             $room = new Room($input);
             $result = $this->roomService->update($room);
             echo json_encode(['message' => 'Room updated successfully', 'data' => $result]);
-            
+
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         try {
             $this->roomService->delete($id);
             echo json_encode(['message' => 'Room deleted successfully']);
