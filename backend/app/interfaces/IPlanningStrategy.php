@@ -2,12 +2,15 @@
 
 namespace App\Interfaces;
 
-interface IPlanningStrategy {
+use App\Models\Course;
+use App\Models\Room;
+use App\Models\Schedule;
+use DateTime;
 
-    public function plan(Corse $corse , Salle $salle , DateTime $date): bool; 
-
-    public function cancelPlan(Corse $corse , Salle $salle , DateTime $date): bool;
-    
-    
-
+interface IPlanningStrategy 
+{
+    public function plan(Course $course, Room $room, DateTime $date, string $startTime, string $endTime): Schedule; 
+    public function cancelPlan(int $scheduleId): bool;
+    public function isAvailable(Course $course, Room $room, DateTime $date, string $startTime, string $endTime): bool;
+    public function getConflicts(Course $course, Room $room, DateTime $date, string $startTime, string $endTime): array;
 }
