@@ -21,19 +21,19 @@ class StudentController
             $this->studentService = new StudentService($pdo);
         }
     }
-
+    
 
     public function create(){
         // Get data from request body for POST requests
-        $input = json_decode(file_get_contents('php://input'), true);
-        
+        $input = json_decode(file_get_contents('php://input'), true); //why do we need this  while we have a service method that got the logic of it? answer : because we want to get the data from the request body and we want to decode it from json to an array so that we can use it in our code ,  but does the data comes like json from the services to decode it ? answer: 
         if (!$input) {
             echo json_encode(['error' => 'Invalid JSON data']);
             return;
+            //this two lines means that if the input is not valid we will return an error message
         }
 
         try {
-            $student = PersonFactory::createPerson($input['role'] ?? 'student', $input); 
+            $student = PersonFactory::createPerson($input['role'] ?? 'student', $input); // this line means that if the role is not set we will set it to student
             $result = $this->studentService->save($student);
             echo json_encode(['message' => 'Student created successfully', 'data' => $result]);
         } catch (\Exception $e) {
