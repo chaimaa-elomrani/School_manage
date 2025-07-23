@@ -76,15 +76,20 @@ CREATE TABLE schedules (
 );
 
 
+
+
 CREATE TABLE evaluations (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    course_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    teacher_id INT NOT NULL,
     title VARCHAR(100) NOT NULL,
     type ENUM('test', 'exam', 'homework', 'project') NOT NULL,
-    date DATE NOT NULL,
-    max_score DECIMAL(5,2) DEFAULT 20.00,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+    date_evaluation DATE NOT NULL,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
 );
+
+
 
 
 CREATE TABLE grades (
@@ -103,6 +108,7 @@ CREATE TABLE bulletins(
     course_id INT NOT NULL,
     evaluation_id INT NOT NULL,
     grade VARCHAR(20),
+    general_average DECIMAL(5,2);
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     FOREIGN KEY (evaluation_id) REFERENCES evaluations(id) ON DELETE CASCADE

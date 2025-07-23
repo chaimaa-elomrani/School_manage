@@ -8,7 +8,7 @@ class Grades {
     private $score ; 
 
 
-    public function __construct(){
+    public function __construct(array $data){
         $this->id = $data['id'] ?? null;
         $this->student_id = $data['student_id'] ?? null;
         $this->evaluation_id = $data['evaluation_id'] ?? null;
