@@ -45,4 +45,15 @@ class Bulletin{
         return $this->general_average;
     }
 
+    public function toArray() {
+        return [
+            'id' => $this->id,
+            'student_id' => $this->student_id,
+            'course_id' => $this->course_id,
+            'evaluation_id' => $this->evaluation_id,
+            'grade' => $this->grade,
+            'general_average' => $this->general_average
+        ];
+    }
+
 }
