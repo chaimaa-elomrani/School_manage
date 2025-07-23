@@ -8,6 +8,7 @@ class Bulletin{
     private $course_id;
     private $evaluation_id;
     private $grade;
+    private $general_average ; 
 
 
 
@@ -38,6 +39,10 @@ class Bulletin{
 
     public function getGrade(){
         return $this->grade;
+    }
+
+    public function getGeneralAverage(){
+        return $this->general_average;
     }
 
 }

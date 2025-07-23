@@ -36,9 +36,11 @@ class EvaluationService
     public function getAll()
     {
         $stmt = $this->pdo->prepare(
-            'SELECT e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
-        s.name , t.first_name , t.last_name 
-        FROM evaluations e join subjects s ON e.subject_id = s.id join teachers t ON e.teacher_id = t.id'
+        'SELECT e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
+        s.name , t.person_id , p.first_name , p.last_name FROM evaluations e
+        join subjects s ON e.subject_id = s.id 
+        join teachers t ON e.teacher_id = t.id
+        join person p ON t.person_id = p.id'
         );
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -52,9 +54,11 @@ class EvaluationService
     public function getById($id)
     {
         $stmt = $this->pdo->prepare(
-            'SELECT e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
-        s.name , t.first_name , t.last_name FROM evaluations e 
-        join subjects s ON e.subject_id = s.id join teachers t ON e.teacher_id = t.id WHERE e.id = :id'
+        'SELECT e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
+        s.name , t.person_id , p.first_name , p.last_name FROM evaluations e
+        join subjects s ON e.subject_id = s.id 
+        join teachers t ON e.teacher_id = t.id
+        join person p ON t.person_id = p.id WHERE e.id = :id'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -68,7 +72,9 @@ class EvaluationService
     public function update(Evaluation $evaluation)
     {
         try {
-            $stmt = $this->pdo->prepare('UPDATE evaluations SET teacher_id = :teacher_id, subject_id = :subject_id, title = :title, type = :type, date_evaluation = :date_evaluation WHERE id = :id');
+            $stmt = $this->pdo->prepare(
+            'UPDATE evaluations SET teacher_id = :teacher_id, subject_id = :subject_id, title = :title
+            , type = :type, date_evaluation = :date_evaluation WHERE id = :id');
             $stmt->execute([
                 'teacher_id' => $evaluation->getTeacherId(),
                 'subject_id' => $evaluation->getSubjectId(),
