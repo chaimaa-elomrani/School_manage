@@ -7,12 +7,14 @@ class Room implements IRoom{
 
     private $id;
     private $number;
-    private $level;
+    private $type;
+    private $disponibility;
 
     public function __construct(array $data){
         $this->id = $data['id'] ?? null ; 
         $this->number = $data['number'] ?? '';
-        $this->level = $data['level'] ?? '';
+        $this->type = $data['type'] ?? 'classroom';
+        $this->disponibility = $data['disponibility'] ?? 'available';
     }
 
     public function getId() { 
@@ -21,14 +23,27 @@ class Room implements IRoom{
     public function getNumber() {
         return $this->number;
     }
-    public function getLevel() {
-        return $this->level;
+    public function getType() {
+        return $this->type;
+    }
+    public function getDisponibility() {
+        return $this->disponibility;
+    }
+    public function getLevel() { 
+        // Map type to level for strategy pattern
+        switch($this->type) {
+            case 'classroom': return 'beginner';
+            case 'lab': return 'intermediate';
+            case 'auditorium': return 'advanced';
+            default: return 'beginner';
+        }
     }
     public function toArray() {
         return [
             'id' => $this->id,
             'number' => $this->number,
-            'level' => $this->level
+            'type' => $this->type,
+            'disponibility' => $this->disponibility
         ];
     }
 

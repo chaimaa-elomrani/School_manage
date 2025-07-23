@@ -7,25 +7,18 @@ CREATE TABLE person (
     role ENUM('student', 'teacher', 'parent', 'admin') NOT NULL
 );
 
-CREATE TABLE classes (
+CREATE TABLE rooms (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
-    level VARCHAR(20) NOT NULL
+    number VARCHAR(20) NOT NULL,
+    type ENUM('classroom', 'lab', 'auditorium') NOT NULL, 
+    disponibility ENUM('available', 'occupied') NOT NULL
 );
 
 
 CREATE TABLE subjects (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    code VARCHAR(10) UNIQUE NOT NULL
 );
-
-CREATE TABLE rooms (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
-    capacity INT NOT NULL
-);
-
 
 
 CREATE TABLE students (
@@ -44,9 +37,7 @@ CREATE TABLE teachers (
     person_id INT NOT NULL,
     employee_number VARCHAR(20) UNIQUE NOT NULL,
     specialty VARCHAR(100),
-    FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE,
-    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
-
+    FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE
 );
 
 CREATE TABLE parents (
@@ -57,21 +48,27 @@ CREATE TABLE parents (
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
 
+
 CREATE TABLE courses (
     id INT PRIMARY KEY AUTO_INCREMENT,
     subject_id INT NOT NULL,
     teacher_id INT NOT NULL,
-    class_id INT NOT NULL,
+    room_id INT NOT NULL,
+    duration VARCHAR(20) NOT NULL,
+    level VARCHAR(100) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
     FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
     FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE,
-    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE schedules (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_id INT NOT NULL,
     room_id INT NOT NULL,
-    day_of_week ENUM('monday', 'tuesday', 'wednesday', 'thursday', 'friday') NOT NULL,
+    date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
@@ -139,6 +136,14 @@ CREATE TABLE salaries (
     payment_date DATE,
     status ENUM('pending', 'paid') DEFAULT 'pending',
     FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 

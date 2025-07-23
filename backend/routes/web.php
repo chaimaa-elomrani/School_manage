@@ -16,6 +16,7 @@ $router->get('/showTeacher/{id}', 'TeacherController@getById');
 $router->post('/updateTeacher', 'TeacherController@update');
 $router->delete('/deleteTeacher/{id}', 'TeacherController@delete');
 
+// room routes tested successfuly 
 $router->post('/createRoom', 'RoomController@create');
 $router->get('/showRooms', 'RoomController@getAll');
 $router->get('/showRoom/{id}', 'RoomController@getById');

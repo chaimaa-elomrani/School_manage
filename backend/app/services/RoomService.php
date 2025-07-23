@@ -13,20 +13,22 @@ class RoomService
 
     public function save(Room $room)
     {
-        $this->pdo->beginTransaction();
-
-        try {
-            $stmt = $this->pdo->prepare('INSERT INTO rooms (number, level) VALUES (:number, :level)');
-            $stmt->execute([
-                'number' => $room->getNumber(),
-                'level' => $room->getLevel()
-            ]);
-            $this->pdo->commit();
-            return $room;
-        } catch (\Exception $e) {
-            $this->pdo->rollback();
-            throw $e;
-        }
+        $stmt = $this->pdo->prepare('INSERT INTO rooms (number, type, disponibility) VALUES (:number, :type, :disponibility)');
+        $stmt->execute([
+            'number' => $room->getNumber(),
+            'type' => $room->getType(),
+            'disponibility' => $room->getDisponibility()
+        ]);
+        
+        $roomId = $this->pdo->lastInsertId();
+        $roomData = [
+            'id' => $roomId,
+            'number' => $room->getNumber(),
+            'type' => $room->getType(),
+            'disponibility' => $room->getDisponibility()
+        ];
+        
+        return new Room($roomData);
     }
 
     public function getAll()
@@ -58,28 +60,19 @@ class RoomService
 
     public function update(Room $room)
     {
-        $this->pdo->beginTransaction();
-
-        try {
-            $stmt = $this->pdo->prepare('UPDATE rooms SET number = :number , level = :level WHERE id = :id');
-            $stmt->execute([
-                'id' => $room->getId(),
-                'number' => $room->getNumber(),
-                'level' => $room->getLevel()
-            ]);
-
-            $this->pdo->commit();
-            return $room;
-        } catch (\Exception $e) {
-            $this->pdo->rollback();
-            throw $e;
-        }
+        $stmt = $this->pdo->prepare('UPDATE rooms SET number = :number, type = :type, disponibility = :disponibility WHERE id = :id');
+        $stmt->execute([
+            'id' => $room->getId(),
+            'number' => $room->getNumber(),
+            'type' => $room->getType(),
+            'disponibility' => $room->getDisponibility()
+        ]);
+        return $room;
     }
 
     public function delete($id)
     {
         $stmt = $this->pdo->prepare('DELETE FROM rooms WHERE id = :id');
-        $stmt->execute(['id' => $id]);
-        return true;
+        return $stmt->execute(['id' => $id]);
     }   
 }
