@@ -97,12 +97,16 @@ CREATE TABLE grades (
 );
 
 
-CREATE TABLE report_cards (
+CREATE TABLE bulletins(
     id INT PRIMARY KEY AUTO_INCREMENT,
     student_id INT NOT NULL,
-    period VARCHAR(20) NOT NULL,
-    average_score DECIMAL(5,2),
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+    course_id INT NOT NULL,
+    evaluation_id INT NOT NULL,
+    grade VARCHAR(20),
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (evaluation_id) REFERENCES evaluations(id) ON DELETE CASCADE
+
 );
 
 
