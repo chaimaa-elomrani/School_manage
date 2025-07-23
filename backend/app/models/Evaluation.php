@@ -44,4 +44,14 @@ class Evaluation{
     }
 
 
+    public function toArray() {
+        return [
+            'id' => $this->id,
+            'subject_id' => $this->subject_id,
+            'teacher_id' => $this->teacher_id,
+            'title' => $this->title,
+            'type' => $this->type,
+            'date_evaluation' => $this->date_evaluation
+        ];
+    }
 }

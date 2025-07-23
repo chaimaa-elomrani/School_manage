@@ -32,4 +32,13 @@ class Grades {
     }
 
 
+    public function toArray() {
+        return [
+            'id' => $this->id,
+            'student_id' => $this->student_id,
+            'evaluation_id' => $this->evaluation_id,
+            'score' => $this->score
+        ];
+    }
+
 }
