@@ -47,3 +47,17 @@ $router->post('/updatePlanning/{id}', 'PlanningController@update');
 $router->delete('/deletePlanning/{id}', 'PlanningController@delete');
 
 
+$router->post('/createEvaluation', 'EvaluationsController@create');
+$router->get('/showEvaluations', 'EvaluationsController@getAll');
+$router->get('/showEvaluation/{id}', 'EvaluationsController@getById');
+$router->post('/updateEvaluation/{id}', 'EvaluationsController@update');
+$router->delete('/deleteEvaluation/{id}', 'EvaluationsController@delete');
+
+
+$router->post('/createGrade', 'GradesController@create');
+$router->get('/showGrades', 'GradesController@getAll');
+$router->get('/showGrade/{id}', 'GradesController@getById');
+$router->post('/updateGrade/{id}', 'GradesController@update');
+$router->delete('/deleteGrade/{id}', 'GradesController@delete');
+
+
