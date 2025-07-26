@@ -3,17 +3,32 @@
 namespace App\Controllers;
 
 use App\Models\PaiementEleve;
-use App\Services\PaiementEleveService;
+use App\Interfaces\IFinancialService;
+use App\Interfaces\IPaymentRepository;
+use App\Services\FinancialService;
+use App\Services\PaymentNotificationService;
+use App\Repositories\PaymentRepository;
 use Core\Db;
 
 class PaiementEleveController
 {
-    private $paymentService;
+    private $financialService;
+    private $paymentRepository;
 
-    public function __construct()
-    {
-        $pdo = Db::connection();
-        $this->paymentService = new PaiementEleveService($pdo);
+    public function __construct(
+        IFinancialService $financialService = null,
+        IPaymentRepository $paymentRepository = null
+    ) {
+        if ($financialService && $paymentRepository) {
+            $this->financialService = $financialService;
+            $this->paymentRepository = $paymentRepository;
+        } else {
+            // Default dependency injection
+            $pdo = Db::connection();
+            $this->paymentRepository = new PaymentRepository($pdo, 'payments');
+            $notificationService = new PaymentNotificationService($pdo);
+            $this->financialService = new FinancialService($this->paymentRepository, $notificationService);
+        }
     }
 
     public function create()
@@ -35,25 +50,13 @@ class PaiementEleveController
                 $payment->applyExtraFee($input['extra_fee']);
             }
 
-            $result = $this->paymentService->save($payment);
-            echo json_encode(['message' => 'Payment created successfully', 'data' => $result->toArray()]);
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    public function markAsPaid($id)
-    {
-        try {
-            $payment = $this->paymentService->getById($id);
-            if (!$payment) {
-                echo json_encode(['error' => 'Payment not found']);
-                return;
-            }
-
-            $payment->markAsPaid();
-            $result = $this->paymentService->save($payment);
-            echo json_encode(['message' => 'Payment marked as paid', 'data' => $result->toArray()]);
+            $paymentId = $this->financialService->processPayment($payment);
+            
+            echo json_encode([
+                'message' => 'Payment created successfully',
+                'payment_id' => $paymentId,
+                'data' => $payment->toArray()
+            ]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
@@ -62,9 +65,10 @@ class PaiementEleveController
     public function getAll()
     {
         try {
-            $payments = $this->paymentService->getAll();
+            $payments = $this->paymentRepository->getAll();
             $paymentsArray = [];
-            foreach ($payments as $payment) {
+            foreach ($payments as $paymentData) {
+                $payment = new PaiementEleve($paymentData);
                 $paymentsArray[] = $payment->toArray();
             }
             echo json_encode(['message' => 'Payments retrieved successfully', 'data' => $paymentsArray]);
@@ -76,8 +80,9 @@ class PaiementEleveController
     public function getById($id)
     {
         try {
-            $payment = $this->paymentService->getById($id);
-            if ($payment) {
+            $paymentData = $this->paymentRepository->getById($id);
+            if ($paymentData) {
+                $payment = new PaiementEleve($paymentData);
                 echo json_encode(['message' => 'Payment found', 'data' => $payment->toArray()]);
             } else {
                 echo json_encode(['error' => 'Payment not found']);

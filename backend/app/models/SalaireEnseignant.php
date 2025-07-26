@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use App\Interfaces\IPayable;
+use App\Interfaces\IPaymentCalculator;
+use App\Interfaces\IExtraFeeable;
+use App\Interfaces\IPaymentStatus;
 
-class SalaireEnseignant implements IPayable
+class SalaireEnseignant implements IPaymentCalculator, IExtraFeeable, IPaymentStatus
 {
     private $id;
     private $teacher_id;
@@ -29,19 +31,10 @@ class SalaireEnseignant implements IPayable
         $this->deduction = $data['deduction'] ?? 0;
     }
 
+    // IPaymentCalculator
     public function getBaseAmount(): float
     {
         return (float) $this->amount;
-    }
-
-    public function applyDiscount(float $discount): void
-    {
-        $this->deduction = $discount;
-    }
-
-    public function applyExtraFee(float $extraFee): void
-    {
-        $this->bonus = $extraFee;
     }
 
     public function getTotalAmount(): float
@@ -49,6 +42,29 @@ class SalaireEnseignant implements IPayable
         return $this->getBaseAmount() + $this->bonus - $this->deduction;
     }
 
+    // IExtraFeeable (bonus)
+    public function applyExtraFee(float $extraFee): void
+    {
+        $this->bonus = $extraFee;
+    }
+
+    public function getExtraFee(): float
+    {
+        return $this->bonus;
+    }
+
+    // Custom deduction method (not discount)
+    public function applyDeduction(float $deduction): void
+    {
+        $this->deduction = $deduction;
+    }
+
+    public function getDeduction(): float
+    {
+        return $this->deduction;
+    }
+
+    // IPaymentStatus
     public function markAsPaid(): void
     {
         $this->status = 'paid';
@@ -66,8 +82,6 @@ class SalaireEnseignant implements IPayable
     public function getMonth() { return $this->month; }
     public function getYear() { return $this->year; }
     public function getPaymentDate() { return $this->payment_date; }
-    public function getBonus() { return $this->bonus; }
-    public function getDeduction() { return $this->deduction; }
 
     public function toArray(): array
     {

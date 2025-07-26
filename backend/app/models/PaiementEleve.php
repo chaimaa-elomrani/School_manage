@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
-use App\Interfaces\IPayable;
+use App\Interfaces\IPaymentCalculator;
+use App\Interfaces\IDiscountable;
+use App\Interfaces\IExtraFeeable;
+use App\Interfaces\IPaymentStatus;
 
-class PaiementEleve implements IPayable
+class PaiementEleve implements IPaymentCalculator, IDiscountable, IExtraFeeable, IPaymentStatus
 {
     private $id;
     private $student_id;
@@ -27,19 +30,10 @@ class PaiementEleve implements IPayable
         $this->extra_fee = $data['extra_fee'] ?? 0;
     }
 
+    // IPaymentCalculator
     public function getBaseAmount(): float
     {
         return (float) $this->amount;
-    }
-
-    public function applyDiscount(float $discount): void
-    {
-        $this->discount = $discount;
-    }
-
-    public function applyExtraFee(float $extraFee): void
-    {
-        $this->extra_fee = $extraFee;
     }
 
     public function getTotalAmount(): float
@@ -47,6 +41,29 @@ class PaiementEleve implements IPayable
         return $this->getBaseAmount() - $this->discount + $this->extra_fee;
     }
 
+    // IDiscountable
+    public function applyDiscount(float $discount): void
+    {
+        $this->discount = $discount;
+    }
+
+    public function getDiscount(): float
+    {
+        return $this->discount;
+    }
+
+    // IExtraFeeable
+    public function applyExtraFee(float $extraFee): void
+    {
+        $this->extra_fee = $extraFee;
+    }
+
+    public function getExtraFee(): float
+    {
+        return $this->extra_fee;
+    }
+
+    // IPaymentStatus
     public function markAsPaid(): void
     {
         $this->status = 'paid';
@@ -63,8 +80,6 @@ class PaiementEleve implements IPayable
     public function getStudentId() { return $this->student_id; }
     public function getFeeId() { return $this->fee_id; }
     public function getPaymentDate() { return $this->payment_date; }
-    public function getDiscount() { return $this->discount; }
-    public function getExtraFee() { return $this->extra_fee; }
 
     public function toArray(): array
     {

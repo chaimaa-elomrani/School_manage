@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use App\Interfaces\IPayable;
+use App\Interfaces\IPaymentCalculator;
+use App\Interfaces\IDiscountable;
+use App\Interfaces\IExtraFeeable;
 
-class FraisScolaire implements IPayable
+class FraisScolaire implements IPaymentCalculator, IDiscountable, IExtraFeeable
 {
     private $id;
     private $name;
@@ -25,19 +27,10 @@ class FraisScolaire implements IPayable
         $this->status = $data['status'] ?? 'active';
     }
 
+    // IPaymentCalculator
     public function getBaseAmount(): float
     {
         return (float) $this->amount;
-    }
-
-    public function applyDiscount(float $discount): void
-    {
-        $this->discount = $discount;
-    }
-
-    public function applyExtraFee(float $extraFee): void
-    {
-        $this->extra_fee = $extraFee;
     }
 
     public function getTotalAmount(): float
@@ -45,9 +38,37 @@ class FraisScolaire implements IPayable
         return $this->getBaseAmount() - $this->discount + $this->extra_fee;
     }
 
-    public function markAsPaid(): void
+    // IDiscountable
+    public function applyDiscount(float $discount): void
     {
-        $this->status = 'paid';
+        $this->discount = $discount;
+    }
+
+    public function getDiscount(): float
+    {
+        return $this->discount;
+    }
+
+    // IExtraFeeable
+    public function applyExtraFee(float $extraFee): void
+    {
+        $this->extra_fee = $extraFee;
+    }
+
+    public function getExtraFee(): float
+    {
+        return $this->extra_fee;
+    }
+
+    // Custom status methods
+    public function activate(): void
+    {
+        $this->status = 'active';
+    }
+
+    public function deactivate(): void
+    {
+        $this->status = 'inactive';
     }
 
     public function getStatus(): string
@@ -59,8 +80,6 @@ class FraisScolaire implements IPayable
     public function getId() { return $this->id; }
     public function getName() { return $this->name; }
     public function getType() { return $this->type; }
-    public function getDiscount() { return $this->discount; }
-    public function getExtraFee() { return $this->extra_fee; }
 
     public function toArray(): array
     {
