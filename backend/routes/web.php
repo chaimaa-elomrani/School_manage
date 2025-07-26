@@ -79,3 +79,20 @@ $router->get('/course-schedule/{courseId}', 'CourseScheduleController@getCourseS
 
 $router->get('/notifications', 'NotificationController@getAll');
 
+// Student Payment Routes
+$router->post('/payments/student/create', 'PaiementEleveController@create');
+$router->get('/payments/student', 'PaiementEleveController@getAll');
+$router->get('/payments/student/{id}', 'PaiementEleveController@getById');
+$router->post('/payments/student/{id}/pay', 'PaiementEleveController@markAsPaid');
+
+// Teacher Salary Routes
+$router->post('/salaries/create', 'SalaireEnseignantController@create');
+$router->get('/salaries', 'SalaireEnseignantController@getAll');
+$router->get('/salaries/{id}', 'SalaireEnseignantController@getById');
+$router->post('/salaries/{id}/pay', 'SalaireEnseignantController@markAsPaid');
+
+// School Fees Routes
+$router->post('/school-fees/create', 'FraisScolaireController@create');
+$router->get('/school-fees', 'FraisScolaireController@getAll');
+$router->get('/school-fees/{id}', 'FraisScolaireController@getById');
+
