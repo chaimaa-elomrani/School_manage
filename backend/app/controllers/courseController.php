@@ -9,14 +9,13 @@ class CourseController
 {
     private $courseService;
 
-    public function __construct(CourseService $courseService)
+    public function __construct(CourseService $courseService = null)
     {
-        if ($courseService) { // we passed this $courseService in the if condition because we want to check if it exists or not
+        if ($courseService) {
             $this->courseService = $courseService;
         } else {
             $pdo = Db::connection();
             $this->courseService = new CourseService($pdo);
-            // this two lines means that if the $courseService doesn't exist we will create a new one
         }
     }
 

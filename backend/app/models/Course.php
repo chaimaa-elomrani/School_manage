@@ -1,73 +1,47 @@
 <?php
+
 namespace App\Models;
 
-use App\Interfaces\ICourse;
-
-class Course implements ICourse{
-
+class Course
+{
     private $id;
-    private $name ; 
-    private $teacher_id;
-    private $subject_id;
-    private $room_id;
-    private $duration;
-    private $level;
-    private $start_date;
-    private $end_date;
+    private $name;
+    private $code;
+    private $credits;
+    private $description;
 
-    public function __construct(array $data){
+    public function __construct(array $data = [])
+    {
         $this->id = $data['id'] ?? null;
-        $this->teacher_id = $data['teacher_id'] ?? null;
-        $this->subject_id = $data['subject_id'] ?? null;
-        $this->room_id = $data['room_id'] ?? null;
-        $this->duration = $data['duration'] ?? null;
-        $this->level = $data['level'] ?? null;
-        $this->start_date = $data['start_date'] ?? null;
-        $this->end_date = $data['end_date'] ?? null;
+        $this->name = $data['name'] ?? '';
+        $this->code = $data['code'] ?? '';
+        $this->credits = $data['credits'] ?? 0;
+        $this->description = $data['description'] ?? '';
     }
 
-
-    public  function getName(){
-        return $this->name;
-    }
-    public function getId(){
-        return $this->id;
-    }
-    public function getTeacherId(){
-        return $this->teacher_id;
-    }
-    public function getSubjectId(){
-        return $this->subject_id;
-    }
-    public function getRoomId(){
-        return $this->room_id;
-    }
-    public function getDuration(){
-        return $this->duration;
-    }
-    public function getLevel(){
-        return $this->level;
-    }
-    public function getCourseStartDate(){
-        return $this->start_date;
-    }
-    public function getCourseEndDate(){
-        return $this->end_date;
-    }
-
-   
-
-    public function toArray() {
+    public function toArray(): array
+    {
         return [
             'id' => $this->id,
-            'teacher_id' => $this->teacher_id,
-            'subject_id' => $this->subject_id,
-            'room_id' => $this->room_id,
-            'duration' => $this->duration,
-            'level' => $this->level,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date
+            'name' => $this->name,
+            'code' => $this->code,
+            'credits' => $this->credits,
+            'description' => $this->description
         ];
     }
 
+    // Getters and setters...
+    public function getId() { return $this->id; }
+    public function getName() { return $this->name; }
+    public function getCode() { return $this->code; }
+
+     public function getCredits()
+    {
+        return $this->credits;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
 }

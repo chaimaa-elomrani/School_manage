@@ -96,3 +96,19 @@ $router->post('/school-fees/create', 'FraisScolaireController@create');
 $router->get('/school-fees', 'FraisScolaireController@getAll');
 $router->get('/school-fees/{id}', 'FraisScolaireController@getById');
 
+// Communication routes
+$router->post('/communication/email', 'CommunicationController@sendEmail');
+$router->post('/communication/sms', 'CommunicationController@sendSMS');
+$router->post('/communication/message', 'CommunicationController@sendMessage');
+$router->get('/communication/messages', 'CommunicationController@getMessages');
+
+// Financial routes
+$router->post('/payment/create', 'PaiementEleveController@create');
+$router->get('/payments', 'PaiementEleveController@getAll');
+$router->post('/payment/process', 'PaiementEleveController@processPayment');
+
+// Planning routes
+$router->post('/planning/create', 'PlanningController@create');
+$router->get('/planning/check', 'PlanningController@checkAvailability');
+$router->get('/planning/conflicts', 'PlanningController@getConflicts');
+

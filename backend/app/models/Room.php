@@ -1,51 +1,37 @@
 <?php
 
 namespace App\Models;
-use App\Interfaces\IRoom;
 
-class Room implements IRoom{
-
+class Room
+{
     private $id;
-    private $number;
+    private $name;
+    private $capacity;
     private $type;
-    private $disponibility;
+    private $equipment;
 
-    public function __construct(array $data){
-        $this->id = $data['id'] ?? null ; 
-        $this->number = $data['number'] ?? '';
-        $this->type = $data['type'] ?? 'classroom';
-        $this->disponibility = $data['disponibility'] ?? 'available';
+    public function __construct(array $data = [])
+    {
+        $this->id = $data['id'] ?? null;
+        $this->name = $data['name'] ?? '';
+        $this->capacity = $data['capacity'] ?? 0;
+        $this->type = $data['type'] ?? '';
+        $this->equipment = $data['equipment'] ?? '';
     }
 
-    public function getId() { 
-        return $this->id;
-    }
-    public function getNumber() {
-        return $this->number;
-    }
-    public function getType() {
-        return $this->type;
-    }
-    public function getDisponibility() {
-        return $this->disponibility;
-    }
-    public function getLevel() { 
-        // Map type to level for strategy pattern
-        switch($this->type) {
-            case 'classroom': return 'beginner';
-            case 'lab': return 'intermediate';
-            case 'auditorium': return 'advanced';
-            default: return 'beginner';
-        }
-    }
-    public function toArray() {
+    public function toArray(): array
+    {
         return [
             'id' => $this->id,
-            'number' => $this->number,
+            'name' => $this->name,
+            'capacity' => $this->capacity,
             'type' => $this->type,
-            'disponibility' => $this->disponibility
+            'equipment' => $this->equipment
         ];
     }
 
-  
+    // Getters...
+    public function getId() { return $this->id; }
+    public function getName() { return $this->name; }
+    public function getCapacity() { return $this->capacity; }
 }
