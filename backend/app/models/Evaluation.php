@@ -43,6 +43,9 @@ class Evaluation{
         return $this->teacher_id;
     }
 
+    public function setId($id) {
+        $this->id = (int)$id; // Ensure it's an integer
+    }
 
     public function toArray() {
         return [

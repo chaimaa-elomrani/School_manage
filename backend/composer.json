@@ -9,7 +9,8 @@
             "App\\Models\\": "app/models/",
             "App\\Services\\": "app/services/",
             "App\\Factories\\": "app/factories/",
-            "App\\Interfaces\\": "app/interfaces/"
+            "App\\Interfaces\\": "app/interfaces/",
+            "App\\Strategies\\": "app/strategies/"
         }
     },
     "require": {

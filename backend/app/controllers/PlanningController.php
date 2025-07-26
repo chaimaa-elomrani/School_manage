@@ -9,7 +9,7 @@ use App\Strategies\PlanningStrategy;
 use Core\Db;
 use DateTime;
 
-class ScheduleController
+class PlanningController
 {
     private $scheduleService;
     private $planningStrategy;
@@ -57,14 +57,12 @@ class ScheduleController
             $schedule = $this->planningStrategy->plan($course, $room, $date, $startTime, $endTime);
             
             echo json_encode([
-                'message' => 'Schedule created successfully',
+                'message' => 'Planning created successfully',
                 'data' => $schedule->toArray()
             ]);
-            return $schedule;
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
-
     }
 
     public function getAll()
@@ -75,7 +73,7 @@ class ScheduleController
             foreach ($schedules as $schedule) {
                 $schedulesArray[] = $schedule->toArray();
             }
-            echo json_encode(['message' => 'Schedules retrieved successfully', 'data' => $schedulesArray]);
+            echo json_encode(['message' => 'Plannings retrieved successfully', 'data' => $schedulesArray]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
@@ -86,9 +84,9 @@ class ScheduleController
         try {
             $schedule = $this->scheduleService->getById($id);
             if ($schedule) {
-                echo json_encode(['message' => 'Schedule found', 'data' => $schedule->toArray()]);
+                echo json_encode(['message' => 'Planning found', 'data' => $schedule->toArray()]);
             } else {
-                echo json_encode(['error' => 'Schedule not found']);
+                echo json_encode(['error' => 'Planning not found']);
             }
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
@@ -105,10 +103,8 @@ class ScheduleController
         }
 
         try {
-            // First cancel the existing plan
             $this->planningStrategy->cancelPlan($id);
 
-            // Then create new plan
             $course = $this->courseService->getById($input['course_id']);
             $room = $this->roomService->getById($input['room_id']);
             
@@ -123,7 +119,7 @@ class ScheduleController
 
             $schedule = $this->planningStrategy->plan($course, $room, $date, $startTime, $endTime);
             
-            echo json_encode(['message' => 'Schedule updated successfully', 'data' => $schedule->toArray()]);
+            echo json_encode(['message' => 'Planning updated successfully', 'data' => $schedule->toArray()]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
@@ -135,48 +131,9 @@ class ScheduleController
             $result = $this->planningStrategy->cancelPlan($id);
             
             if ($result) {
-                echo json_encode(['message' => 'Schedule deleted successfully']);
+                echo json_encode(['message' => 'Planning deleted successfully']);
             } else {
-                echo json_encode(['error' => 'Failed to delete schedule']);
-            }
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    public function checkAvailability()
-    {
-        $input = json_decode(file_get_contents('php://input'), true);
-        
-        if (!$input) {
-            echo json_encode(['error' => 'Invalid JSON data']);
-            return;
-        }
-
-        try {
-            $course = $this->courseService->getById($input['course_id']);
-            $room = $this->roomService->getById($input['room_id']);
-            
-            if (!$course || !$room) {
-                echo json_encode(['error' => 'Course or Room not found']);
-                return;
-            }
-
-            $date = new DateTime($input['date']);
-            $startTime = $input['start_time'];
-            $endTime = $input['end_time'];
-
-            $isAvailable = $this->planningStrategy->isAvailable($course, $room, $date, $startTime, $endTime);
-            
-            if ($isAvailable) {
-                echo json_encode(['message' => 'Time slot is available', 'available' => true]);
-            } else {
-                $conflicts = $this->planningStrategy->getConflicts($course, $room, $date, $startTime, $endTime);
-                echo json_encode([
-                    'message' => 'Time slot is not available', 
-                    'available' => false,
-                    'conflicts' => $conflicts
-                ]);
+                echo json_encode(['error' => 'Failed to delete planning']);
             }
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);

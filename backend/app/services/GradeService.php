@@ -16,14 +16,23 @@ class GradeService
     {
         $this->pdo->beginTransaction();
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO grades (evaluation_id, student_id , score) VALUES (?, ?, ?)");
+            $stmt = $this->pdo->prepare("INSERT INTO grades (evaluation_id, student_id, score) VALUES (:evaluation_id, :student_id, :score)");
             $stmt->execute([
                 'evaluation_id' => $grade->getEvaluationId(),
                 'student_id' => $grade->getStudentId(),
                 'score' => $grade->getScore()
             ]);
+            
+            $gradeId = $this->pdo->lastInsertId();
             $this->pdo->commit();
-            return $grade;
+            
+            // Return grade with the new ID
+            return new Grades([
+                'id' => $gradeId,
+                'evaluation_id' => $grade->getEvaluationId(),
+                'student_id' => $grade->getStudentId(),
+                'score' => $grade->getScore()
+            ]);
         } catch (\Exception $e) {
             $this->pdo->rollback();
             throw $e;

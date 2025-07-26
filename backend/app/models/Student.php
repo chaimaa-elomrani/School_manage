@@ -42,8 +42,9 @@ class Student implements IPerson, IStudent{
     public function getPhone() { return $this->phone; }
     public function getClassId() { return $this->class_id; }
     public function getPersonId() { return $this->person_id; }
-    
-
+    public function getRoomId() { 
+        return $this->class_id; // Map to existing class_id property
+    }
     // Setters
     public function setName($name) { 
         $parts = explode(' ', $name, 2);

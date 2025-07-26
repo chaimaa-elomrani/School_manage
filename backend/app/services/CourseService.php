@@ -39,9 +39,10 @@ class CourseService{
         $stmt = $this->pdo->prepare(
             'SELECT c.id , c.name , c.teacher_id , c.subject_id , 
                    c.room_id , c.duration , c.level , c.start_date , c.end_date , 
-                   t.first_name , t.last_name , s.name , r.number FROM  courses c 
+                   p.first_name , p.last_name , s.name as subject_name , r.number FROM courses c 
                    JOIN teachers t ON c.teacher_id = t.id 
-                   JOIN subjects s  ON c.subject_id = s.id 
+                   JOIN person p ON t.person_id = p.id
+                   JOIN subjects s ON c.subject_id = s.id 
                    JOIN rooms r ON c.room_id = r.id'); 
         
         $stmt->execute();
@@ -59,11 +60,13 @@ class CourseService{
     public function getById($id){
         $stmt = $this->pdo->prepare('SELECT c.id , c.name , c.teacher_id , c.subject_id , 
                    c.room_id , c.duration , c.level , c.start_date , c.end_date , 
-                   t.first_name , t.last_name , s.name , r.number FROM  courses c 
+                   p.first_name , p.last_name , s.name as subject_name , r.number FROM courses c 
                    JOIN teachers t ON c.teacher_id = t.id 
-                   JOIN subjects s  ON c.subject_id = s.id 
-                   JOIN rooms r ON c.room_id = r.id');
-        $stmt->execute(); 
+                   JOIN person p ON t.person_id = p.id
+                   JOIN subjects s ON c.subject_id = s.id 
+                   JOIN rooms r ON c.room_id = r.id 
+                   WHERE c.id = :id');
+        $stmt->execute(['id' => $id]); 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if($row){
             return new Course($row);

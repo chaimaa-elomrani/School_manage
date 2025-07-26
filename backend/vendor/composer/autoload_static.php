@@ -13,6 +13,7 @@ class ComposerStaticInit986dd91699fd93ea87db69a4400fd09b
         ),
         'A' => 
         array (
+            'App\\Strategies\\' => 15,
             'App\\Services\\' => 13,
             'App\\Models\\' => 11,
             'App\\Interfaces\\' => 15,
@@ -26,6 +27,10 @@ class ComposerStaticInit986dd91699fd93ea87db69a4400fd09b
         array (
             0 => __DIR__ . '/../..' . '/core',
             1 => __DIR__ . '/../..' . '/config',
+        ),
+        'App\\Strategies\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/app/strategies',
         ),
         'App\\Services\\' => 
         array (

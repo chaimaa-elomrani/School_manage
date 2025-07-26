@@ -16,7 +16,7 @@ class EvaluationService
     {
         $this->pdo->beginTransaction();
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO evaluations (teacher_id, subject_id , title , type, date_evaluation) VALUES (?, ?, ?, ?, ?)");
+            $stmt = $this->pdo->prepare("INSERT INTO evaluations (teacher_id, subject_id, title, type, date_evaluation) VALUES (:teacher_id, :subject_id, :title, :type, :date_evaluation)");
             $stmt->execute([
                 'teacher_id' => $evaluation->getTeacherId(),
                 'subject_id' => $evaluation->getSubjectId(),
@@ -24,8 +24,19 @@ class EvaluationService
                 'type' => $evaluation->getType(),
                 'date_evaluation' => $evaluation->getDate()
             ]);
+            
+            $evaluationId = $this->pdo->lastInsertId();
             $this->pdo->commit();
-            return $evaluation;
+            
+            // Create new evaluation with ID
+            return new Evaluation([
+                'id' => $evaluationId,
+                'teacher_id' => $evaluation->getTeacherId(),
+                'subject_id' => $evaluation->getSubjectId(),
+                'title' => $evaluation->getTitle(),
+                'type' => $evaluation->getType(),
+                'date_evaluation' => $evaluation->getDate()
+            ]);
         } catch (\Exception $e) {
             $this->pdo->rollback();
             throw $e;
@@ -36,7 +47,7 @@ class EvaluationService
     public function getAll()
     {
         $stmt = $this->pdo->prepare(
-        'SELECT e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
+        'SELECT e.id, e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
         s.name , t.person_id , p.first_name , p.last_name FROM evaluations e
         join subjects s ON e.subject_id = s.id 
         join teachers t ON e.teacher_id = t.id
@@ -54,7 +65,7 @@ class EvaluationService
     public function getById($id)
     {
         $stmt = $this->pdo->prepare(
-        'SELECT e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
+        'SELECT e.id, e.subject_id , e.teacher_id , e.title , e.type , e.date_evaluation,
         s.name , t.person_id , p.first_name , p.last_name FROM evaluations e
         join subjects s ON e.subject_id = s.id 
         join teachers t ON e.teacher_id = t.id
@@ -71,11 +82,12 @@ class EvaluationService
 
     public function update(Evaluation $evaluation)
     {
+        $this->pdo->beginTransaction();
         try {
             $stmt = $this->pdo->prepare(
-            'UPDATE evaluations SET teacher_id = :teacher_id, subject_id = :subject_id, title = :title
-            , type = :type, date_evaluation = :date_evaluation WHERE id = :id');
+            'UPDATE evaluations SET teacher_id = :teacher_id, subject_id = :subject_id, title = :title, type = :type, date_evaluation = :date_evaluation WHERE id = :id');
             $stmt->execute([
+                'id' => $evaluation->getId(),
                 'teacher_id' => $evaluation->getTeacherId(),
                 'subject_id' => $evaluation->getSubjectId(),
                 'title' => $evaluation->getTitle(),

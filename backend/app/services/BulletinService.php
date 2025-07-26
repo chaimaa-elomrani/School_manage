@@ -18,7 +18,7 @@ class BulletinService
         try {
             $stmt = $this->pdo->prepare(
                 'INSERT INTO bulletins(student_id , course_id , evaluation_id , grade , general_average)
-                VALUES (:student_id , :course_id , :evaluation_id , :grade , :general_average'
+                VALUES (:student_id , :course_id , :evaluation_id , :grade , :general_average)'
             );
             $stmt->execute([
                 'student_id' => $bulletin->getStudentId(),
@@ -28,8 +28,18 @@ class BulletinService
                 'general_average' => $bulletin->getGeneralAverage()
             ]);
 
+            $bulletinId = $this->pdo->lastInsertId();
             $this->pdo->commit();
-            return $bulletin;
+            
+            // Return bulletin with ID
+            return new Bulletin([
+                'id' => $bulletinId,
+                'student_id' => $bulletin->getStudentId(),
+                'course_id' => $bulletin->getCourseId(),
+                'evaluation_id' => $bulletin->getEvaluationId(),
+                'grade' => $bulletin->getGrade(),
+                'general_average' => $bulletin->getGeneralAverage()
+            ]);
         } catch (\Exception $e) {
             $this->pdo->rollBack();
             throw $e;

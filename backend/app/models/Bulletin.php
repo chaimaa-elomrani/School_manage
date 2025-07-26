@@ -13,11 +13,12 @@ class Bulletin{
 
 
     public function __construct(array $data){
-        $this->id = $data['id'];
+        $this->id = $data['id'] ?? null;
         $this->student_id = $data['student_id'];
         $this->course_id = $data['course_id'];
         $this->evaluation_id = $data['evaluation_id'];
         $this->grade = $data['grade'];
+        $this->general_average = $data['general_average'] ?? null;
     }
 
 

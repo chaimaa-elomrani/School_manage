@@ -14,7 +14,7 @@ class StudentService{
     }
 
     public function save(Student $student){
-        $this->pdo->beginTransaction(); // beginTransaction comes from the PDO class  wich does ths work of starting a transaction , we mean by transactions the work of inserting data in the database in a secure way
+        $this->pdo->beginTransaction();
         
         try {
             // Insert into person table first
@@ -29,15 +29,15 @@ class StudentService{
             
             $person_id = $this->pdo->lastInsertId();
             
-            // Insert into students table
-            $stmt = $this->pdo->prepare('INSERT INTO students (person_id, student_number, class_id) VALUES (:person_id, :student_number, :class_id)');
+            // Insert into students table with correct columns
+            $stmt = $this->pdo->prepare('INSERT INTO students (person_id, student_number, room_id) VALUES (:person_id, :student_number, :room_id)');
             $stmt->execute([
                 'person_id' => $person_id,
                 'student_number' => $student->getStudentNumber(),
-                'class_id' => $student->getClassId()
+                'room_id' => $student->getClassId() // Use existing getClassId() method
             ]);
             
-            $this->pdo->commit(); //commit means that the transaction is complete and the data is saved in the database 
+            $this->pdo->commit();
             return $student;
         } catch (\Exception $e) {
             $this->pdo->rollback();
