@@ -114,6 +114,19 @@ class ScheduleService
         return $schedules;
     }
 
+    public function getByCourseId($courseId)
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM schedules WHERE course_id = :course_id ORDER BY date, start_time');
+        $stmt->execute(['course_id' => $courseId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $schedules = [];
+        foreach ($rows as $row) {
+            $schedules[] = new Schedule($row);
+        }
+        return $schedules;
+    }
+
     public function update(Schedule $schedule)
     {
         $this->pdo->beginTransaction();
