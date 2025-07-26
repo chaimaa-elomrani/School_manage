@@ -71,8 +71,11 @@ $router->get('/showBulletins', 'BulletinController@getAll');
 $router->get('/showBulletin/{id}', 'BulletinController@getById');
 $router->post('/updateBulletin/{id}', 'BulletinController@update');
 $router->delete('/deleteBulletin/{id}', 'BulletinController@delete');
+$router->post('/bulletin/generate', 'BulletinController@generate');
 
 // Course-Schedule Strategy routes
 $router->post('/course-schedule/create', 'CourseScheduleController@createScheduleForCourse');
 $router->get('/course-schedule/{courseId}', 'CourseScheduleController@getCourseSchedules');
+
+$router->get('/notifications', 'NotificationController@getAll');
 

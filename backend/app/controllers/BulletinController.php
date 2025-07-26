@@ -1,91 +1,44 @@
 <?php
 
 namespace App\Controllers;
-use App\Services\BulletinService;
-use App\Models\Bulletin;
+
+use App\Services\StandardBulletinGenerator;
+use App\Services\GradeService;
+use App\Services\NotificationService;
+use App\Observers\GradeNotificationObserver;
 use Core\Db;
 
 class BulletinController
 {
-    private $bulletinService;
+    private $bulletinGenerator;
 
-    public function __construct(BulletinService $bulletinService = null)
+    public function __construct()
     {
-        if ($bulletinService) {
-            $this->bulletinService = $bulletinService;
-        } else {
-            $pdo = Db::connection();
-            $this->bulletinService = new BulletinService($pdo);
-        }
+        $pdo = Db::connection();
+        $gradeService = new GradeService($pdo);
+        $this->bulletinGenerator = new StandardBulletinGenerator($gradeService);
+        
+        // Attach observer to bulletin generator
+        $notificationService = new NotificationService($pdo);
+        $observer = new GradeNotificationObserver($notificationService);
+        $this->bulletinGenerator->attach($observer);
     }
 
-    public function create()
+    public function generate()
     {
         $input = json_decode(file_get_contents('php://input'), true);
-        if (!$input) {
-            echo json_encode(['error' => 'Invalid JSON data']);
-            return;
-        }
-
+        
         try {
-            $bulletin = new Bulletin($input);
-            $result = $this->bulletinService->save($bulletin);
-            echo json_encode(['message' => 'Bulletin created successfully', 'data' => $result]);
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    public function getAll()
-    {
-        try {
-            $bulletins = $this->bulletinService->getAll();
-            $bulletinsArray = [];
-            foreach ($bulletins as $bulletin) {
-                $bulletinsArray[] = $bulletin->toArray();
-            }
-            echo json_encode(['message' => 'Bulletins retrieved successfully', 'data' => $bulletinsArray]);
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    public function getById($id)
-    {
-        try {
-            $bulletin = $this->bulletinService->getById($id);
-            if ($bulletin) {
-                echo json_encode(['message' => 'Bulletin found', 'data' => $bulletin->toArray()]);
-            } else {
-                echo json_encode(['error' => 'Bulletin not found']);
-            }
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    public function update($id)
-    {
-        $input = json_decode(file_get_contents('php://input'), true);
-        if (!$input) {
-            echo json_encode(['error' => 'Invalid JSON data']);
-            return;
-        }
-
-        try {
-            $bulletin = new Bulletin($input);
-            $result = $this->bulletinService->update($bulletin);
-            echo json_encode(['message' => 'Bulletin updated successfully', 'data' => $result]);
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    public function delete($id)
-    {
-        try {
-            $this->bulletinService->delete($id);
-            echo json_encode(['message' => 'Bulletin deleted successfully']);
+            $bulletin = $this->bulletinGenerator->generateBulletin(
+                $input['student_id'],
+                $input['course_id'],
+                $input['evaluation_id']
+            );
+            
+            echo json_encode([
+                'message' => 'Bulletin generated successfully',
+                'data' => $bulletin->toArray()
+            ]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }

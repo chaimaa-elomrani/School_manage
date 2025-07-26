@@ -13,12 +13,7 @@ class ComposerStaticInit986dd91699fd93ea87db69a4400fd09b
         ),
         'A' => 
         array (
-            'App\\Strategies\\' => 15,
-            'App\\Services\\' => 13,
-            'App\\Models\\' => 11,
-            'App\\Interfaces\\' => 15,
-            'App\\Factories\\' => 14,
-            'App\\Controllers\\' => 16,
+            'App\\' => 4,
         ),
     );
 
@@ -26,31 +21,10 @@ class ComposerStaticInit986dd91699fd93ea87db69a4400fd09b
         'Core\\' => 
         array (
             0 => __DIR__ . '/../..' . '/core',
-            1 => __DIR__ . '/../..' . '/config',
         ),
-        'App\\Strategies\\' => 
+        'App\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/app/strategies',
-        ),
-        'App\\Services\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/services',
-        ),
-        'App\\Models\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/models',
-        ),
-        'App\\Interfaces\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/interfaces',
-        ),
-        'App\\Factories\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/factories',
-        ),
-        'App\\Controllers\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/controllers',
+            0 => __DIR__ . '/../..' . '/app',
         ),
     );
 

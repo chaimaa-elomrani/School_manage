@@ -3,6 +3,8 @@
 namespace App\Controllers;
 use App\Services\GradeService;
 use App\Models\Grades;
+use App\Services\NotificationService;
+use App\Observers\GradeNotificationObserver;
 use Core\Db;
 
 class GradesController
@@ -16,6 +18,11 @@ class GradesController
         } else {
             $pdo = Db::connection();
             $this->gradeService = new GradeService($pdo);
+            
+            // Attach observer
+            $notificationService = new NotificationService($pdo);
+            $observer = new GradeNotificationObserver($notificationService);
+            $this->gradeService->attach($observer);
         }
     }
 
