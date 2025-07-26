@@ -22,7 +22,7 @@ class FixedDiscountDecorator extends BasePaymentDecorator
 
     public function getDescription(): string
     {
-        return $this->payment->getDescription() . " + {$this->description} (-{$this->discountAmount})";
+        return "{$this->description} (+{$this->discountAmount})";
     }
 
     public function getDiscountAmount(): float

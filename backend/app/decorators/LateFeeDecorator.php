@@ -19,9 +19,14 @@ class LateFeeDecorator extends BasePaymentDecorator
         return $this->payment->getTotalAmount() + $this->lateFee;
     }
 
+    /**
+     * Returns the description of the late fee, including the fee amount.
+     *
+     * @return string The description with the late fee appended in parentheses.
+     */
     public function getDescription(): string
     {
-        return $this->payment->getDescription() . " + {$this->description} (+{$this->lateFee})";
+        return "{$this->description} (+{$this->lateFee})";
     }
 
     public function getLateFee(): float

@@ -21,7 +21,10 @@ class BonusDecorator extends BasePaymentDecorator
 
     public function getDescription(): string
     {
-        return $this->payment->getDescription() . " + {$this->description} (+{$this->bonusAmount})";
+        $baseDescription = method_exists($this->payment, 'getDescription')
+            ? $this->payment->getDescription()
+            : 'Payment';
+        return $baseDescription . " + {$this->description} (+{$this->bonusAmount})";
     }
 
     public function getBonusAmount(): float

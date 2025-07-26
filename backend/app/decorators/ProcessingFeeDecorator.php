@@ -21,7 +21,10 @@ class ProcessingFeeDecorator extends BasePaymentDecorator
 
     public function getDescription(): string
     {
-        return $this->payment->getDescription() . " + {$this->description} (+{$this->processingFee})";
+        $baseDescription = method_exists($this->payment, 'getDescription')
+            ? $this->payment->getDescription()
+            : 'Payment';
+        return $baseDescription . " + {$this->description} (+{$this->processingFee})";
     }
 
     public function getProcessingFee(): float

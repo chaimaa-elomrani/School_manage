@@ -23,7 +23,10 @@ class PercentageDiscountDecorator extends BasePaymentDecorator
 
     public function getDescription(): string
     {
-        return $this->payment->getDescription() . " + {$this->description} ({$this->percentage}%)";
+        $baseDescription = method_exists($this->payment, 'getDescription')
+            ? $this->payment->getDescription()
+            : 'Payment';
+        return $baseDescription . " - {$this->description} ({$this->percentage}%)";
     }
 
     public function getDiscountAmount(): float
@@ -31,3 +34,4 @@ class PercentageDiscountDecorator extends BasePaymentDecorator
         return $this->payment->getTotalAmount() * ($this->percentage / 100);
     }
 }
+

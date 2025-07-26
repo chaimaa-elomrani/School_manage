@@ -22,7 +22,10 @@ class TaxDecorator extends BasePaymentDecorator
 
     public function getDescription(): string
     {
-        return $this->payment->getDescription() . " + {$this->description} ({$this->taxRate}%)";
+        $baseDescription = method_exists($this->payment, 'getDescription')
+            ? $this->payment->getDescription()
+            : 'Payment';
+        return $baseDescription . " + {$this->description} ({$this->taxRate}%)";
     }
 
     public function getTaxAmount(): float
