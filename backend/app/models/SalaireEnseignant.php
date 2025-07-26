@@ -98,4 +98,10 @@ class SalaireEnseignant implements IPaymentCalculator, IExtraFeeable, IPaymentSt
             'status' => $this->status
         ];
     }
+
+    public function getDescription(): string
+    {
+        return "Teacher salary for {$this->month}/{$this->year}";
+    }
 }
+

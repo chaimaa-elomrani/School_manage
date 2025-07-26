@@ -81,6 +81,11 @@ class FraisScolaire implements IPaymentCalculator, IDiscountable, IExtraFeeable
     public function getName() { return $this->name; }
     public function getType() { return $this->type; }
 
+    public function getDescription(): string
+    {
+        return "School fee: {$this->name}";
+    }
+
     public function toArray(): array
     {
         return [
@@ -95,3 +100,4 @@ class FraisScolaire implements IPaymentCalculator, IDiscountable, IExtraFeeable
         ];
     }
 }
+

@@ -95,4 +95,10 @@ class PaiementEleve implements IPaymentCalculator, IDiscountable, IExtraFeeable,
             'status' => $this->status
         ];
     }
+
+    public function getDescription(): string
+    {
+        return "Student payment for fee ID: {$this->fee_id}";
+    }
 }
+

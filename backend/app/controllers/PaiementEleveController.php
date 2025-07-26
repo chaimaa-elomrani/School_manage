@@ -9,6 +9,7 @@ use App\Services\FinancialService;
 use App\Services\PaymentNotificationService;
 use App\Repositories\PaymentRepository;
 use Core\Db;
+use App\Factories\PaymentDecoratorFactory;
 
 class PaiementEleveController
 {
@@ -42,12 +43,25 @@ class PaiementEleveController
         try {
             $payment = new PaiementEleve($input);
             
-            // Apply discount and extra fees if provided
-            if (isset($input['discount'])) {
-                $payment->applyDiscount($input['discount']);
-            }
-            if (isset($input['extra_fee'])) {
-                $payment->applyExtraFee($input['extra_fee']);
+            // Apply decorators if configuration is provided
+            if (isset($input['payment_config'])) {
+                $decoratedPayment = PaymentDecoratorFactory::createDecoratedPayment($payment, $input['payment_config']);
+                
+                // Update original payment with decorated values
+                if (method_exists($decoratedPayment, 'getDiscountAmount')) {
+                    $payment->applyDiscount($decoratedPayment->getDiscountAmount());
+                }
+                if (method_exists($decoratedPayment, 'getLateFee')) {
+                    $payment->applyExtraFee($decoratedPayment->getLateFee());
+                }
+            } else {
+                // Legacy support for direct discount/extra_fee
+                if (isset($input['discount'])) {
+                    $payment->applyDiscount($input['discount']);
+                }
+                if (isset($input['extra_fee'])) {
+                    $payment->applyExtraFee($input['extra_fee']);
+                }
             }
 
             $paymentId = $this->financialService->processPayment($payment);
@@ -55,7 +69,8 @@ class PaiementEleveController
             echo json_encode([
                 'message' => 'Payment created successfully',
                 'payment_id' => $paymentId,
-                'data' => $payment->toArray()
+                'data' => $payment->toArray(),
+                'description' => $payment->getDescription()
             ]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
@@ -92,3 +107,4 @@ class PaiementEleveController
         }
     }
 }
+
