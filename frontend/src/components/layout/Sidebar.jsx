@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import {
   HomeIcon,
   UsersIcon,
@@ -10,9 +11,8 @@ import {
   CurrencyDollarIcon,
   ChatBubbleLeftRightIcon,
   CogIcon,
-  ArrowRightOnRectangleIcon,
-  Bars3Icon,
-  XMarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
 const menuItems = {
@@ -29,8 +29,8 @@ const menuItems = {
   ],
   teacher: [
     { icon: HomeIcon, label: "Dashboard", path: "/dashboard" },
-    { icon: UsersIcon, label: "My Students", path: "/my-students" },
-    { icon: BookOpenIcon, label: "My Courses", path: "/my-courses" },
+    { icon: UsersIcon, label: "My Students", path: "/students" },
+    { icon: BookOpenIcon, label: "My Courses", path: "/courses" },
     { icon: CalendarIcon, label: "Schedule", path: "/schedule" },
     { icon: DocumentTextIcon, label: "Grades", path: "/grades" },
     { icon: ChatBubbleLeftRightIcon, label: "Messages", path: "/messages" },
@@ -39,8 +39,8 @@ const menuItems = {
     { icon: HomeIcon, label: "Dashboard", path: "/dashboard" },
     { icon: BookOpenIcon, label: "My Courses", path: "/courses" },
     { icon: CalendarIcon, label: "Schedule", path: "/schedule" },
-    { icon: DocumentTextIcon, label: "Grades", path: "/grades" },
-    { icon: ChatBubbleLeftRightIcon, label: "Messages", path: "/messages" },
+    { icon: DocumentTextIcon, label: "Assignments", path: "/assignments" },
+    { icon: CurrencyDollarIcon, label: "Payments", path: "/payments" },
   ],
   parent: [
     { icon: HomeIcon, label: "Dashboard", path: "/dashboard" },
@@ -51,55 +51,71 @@ const menuItems = {
   ],
 };
 
-export default function Sidebar({ currentPage, onPageChange }) {
-  const { user, logout } = useAuth();
+export default function Sidebar({ currentPage }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const userMenuItems = menuItems[user?.role] || menuItems.admin;
 
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   return (
-    <div className={`bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} flex flex-col h-full`}>
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
-        {!isCollapsed && <h2 className="text-xl font-bold text-gray-800">School MS</h2>}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-md hover:bg-gray-100 transition-colors"
-        >
-          {isCollapsed ? <Bars3Icon className="h-4 w-4" /> : <XMarkIcon className="h-4 w-4" />}
-        </button>
+    <div className={`bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ${
+      isCollapsed ? 'w-16' : 'w-64'
+    }`}>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          {!isCollapsed && (
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+              <p className="text-sm text-gray-600 capitalize">{user?.role}</p>
+            </div>
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+          >
+            {isCollapsed ? (
+              <ChevronRightIcon className="h-5 w-5" />
+            ) : (
+              <ChevronLeftIcon className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 p-4 overflow-y-auto">
-        <nav className="space-y-2">
+      {/* Navigation */}
+      <nav className="p-4">
+        <ul className="space-y-2">
           {userMenuItems.map((item) => {
             const Icon = item.icon;
+            const isActive = currentPage === item.path;
+            
             return (
-              <button
-                key={item.path}
-                className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-start px-4'} py-2 rounded-md text-sm font-medium transition-colors ${
-                  currentPage === item.path
-                    ? 'bg-black text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-                onClick={() => onPageChange(item.path)}
-              >
-                <Icon className="h-4 w-4" />
-                {!isCollapsed && <span className="ml-2">{item.label}</span>}
-              </button>
+              <li key={item.path}>
+                <button
+                  onClick={() => handleNavigation(item.path)}
+                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md text-left transition-colors ${
+                    isActive
+                      ? 'bg-black text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  title={isCollapsed ? item.label : ''}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  {!isCollapsed && (
+                    <span className="font-medium">{item.label}</span>
+                  )}
+                </button>
+              </li>
             );
           })}
-        </nav>
-      </div>
-
-      <div className="p-4 border-t border-gray-200">
-        <button
-          className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-start px-4'} py-2 rounded-md text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors`}
-          onClick={logout}
-        >
-          <ArrowRightOnRectangleIcon className="h-4 w-4" />
-          {!isCollapsed && <span className="ml-2">Logout</span>}
-        </button>
-      </div>
+        </ul>
+      </nav>
     </div>
   );
 }

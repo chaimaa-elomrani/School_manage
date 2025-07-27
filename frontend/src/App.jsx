@@ -3,6 +3,13 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/auth/Login';
 import Register from './components/auth/register';
 import Dashboard from './components/Dashboard';
+import StudentList from './components/students/StudentList';
+import AdminDashboard from './components/dashboards/AdminDashboard';
+import TeacherDashboard from './components/dashboards/TeacherDashboard';
+import StudentDashboard from './components/dashboards/StudentDashboard';
+import Layout from './components/layout/Layout';
+import TeacherList from './components/teachers/TeacherList';
+import CourseList from './components/courses/CourseList';
 import './App.css';
 
 // Protected Route Component
@@ -50,11 +57,95 @@ function App() {
                 </PublicRoute>
               } 
             />
+            
+            {/* Protected Routes with Layout */}
             <Route 
               path="/dashboard" 
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/students" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <StudentList />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/teachers" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TeacherList />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/courses" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <CourseList />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/schedule" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <div className="text-center py-12">Schedule Page Coming Soon...</div>
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/reports" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <div className="text-center py-12">Reports Page Coming Soon...</div>
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/finance" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <div className="text-center py-12">Finance Page Coming Soon...</div>
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/communication" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <div className="text-center py-12">Communication Page Coming Soon...</div>
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <div className="text-center py-12">Settings Page Coming Soon...</div>
+                  </Layout>
                 </ProtectedRoute>
               } 
             />

@@ -39,10 +39,18 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await authService.login({ email, password });
-      setUser(response.user);
-      setIsAuthenticated(true);
+      console.log('AuthContext login response:', response); // Debug log
+      
+      const userData = response.data?.user;
+      if (userData) {
+        setUser(userData);
+        setIsAuthenticated(true);
+      }
       return response;
     } catch (error) {
+      console.error('AuthContext login error:', error); // Debug log
+      setUser(null);
+      setIsAuthenticated(false);
       throw error;
     }
   };
@@ -83,3 +91,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+

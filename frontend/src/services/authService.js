@@ -1,6 +1,6 @@
 import api from './api';
 
-export const  authService = {
+export const authService = {
     // register new user 
     register: async(userData) => {
         try{
@@ -20,13 +20,18 @@ export const  authService = {
     login: async(userData) => {
         try{
             const response = await api.post('/auth/login', userData);
-            if(response.data.token){
-                localStorage.setItem('authToken', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+            console.log('Login response:', response.data); // Debug log
+            
+            if(response.data.data && response.data.data.token){
+                localStorage.setItem('authToken', response.data.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.data.user));
             }
             return response.data;
         }catch(error){
-            throw error.response.data || {error: 'Login failed'};
+            console.error('Login error:', error); // Debug log
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            throw error.response?.data || {error: 'Login failed'};
         }
     },
     // logout user

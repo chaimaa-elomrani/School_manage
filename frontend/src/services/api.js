@@ -22,7 +22,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('authToken'); // Changed from 'token' to 'authToken'
+        const token = localStorage.getItem('authToken');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -31,7 +31,7 @@ api.interceptors.request.use(
     (error) => {
         return Promise.reject(error);
     }
-)
+);
 // explanation of this code : 
 // we are creating an interceptor for our requests
 // an interceptor is a function that is called before a request is made

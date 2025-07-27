@@ -1,51 +1,45 @@
-import { useAuth } from '../contexts/AuthContext';
+gnup import { useAuth } from '../contexts/AuthContext';
+import AdminDashboard from './dashboards/AdminDashboard';
+import TeacherDashboard from './dashboards/TeacherDashboard';
+import StudentDashboard from './dashboards/StudentDashboard';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, loading } = useAuth();
 
-  const handleLogout = async () => {
-    await logout();
+  console.log('Dashboard user:', user); // Debug log
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const renderDashboard = () => {
+    console.log('User role:', user?.role); // Debug log
+    
+    switch (user?.role) {
+      case 'admin':
+        return <AdminDashboard />;
+      case 'teacher':
+        return <TeacherDashboard />;
+      case 'student':
+        return <StudentDashboard />;
+      case 'parent':
+        return <div className="text-center py-12">Parent Dashboard Coming Soon...</div>;
+      default:
+        return <div className="text-center py-12">No dashboard available for your role</div>;
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold">School Management</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">
-                Welcome, {user?.first_name} {user?.last_name}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 p-8">
-            <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-2">User Information</h3>
-              <p><strong>Name:</strong> {user?.first_name} {user?.last_name}</p>
-              <p><strong>Email:</strong> {user?.email}</p>
-              <p><strong>Phone:</strong> {user?.phone}</p>
-              <p><strong>Role:</strong> {user?.role}</p>
-            </div>
-          </div>
-        </div>
-      </main>
+    <div>
+      {renderDashboard()}
     </div>
   );
 };
 
 export default Dashboard;
+
+
+
+
+
+

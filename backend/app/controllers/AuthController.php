@@ -50,22 +50,26 @@ class AuthController
         $input = json_decode(file_get_contents('php://input'), true);
         
         if (!$input) {
+            http_response_code(400);
             echo json_encode(['error' => 'Invalid JSON data']);
             return;
         }
 
         if (!isset($input['email']) || !isset($input['password'])) {
+            http_response_code(400);
             echo json_encode(['error' => 'Email and password are required']);
             return;
         }
 
         try {
             $result = $this->authService->login($input['email'], $input['password']);
+            http_response_code(200);
             echo json_encode([
                 'message' => 'Login successful',
                 'data' => $result
             ]);
         } catch (\Exception $e) {
+            http_response_code(401);
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
