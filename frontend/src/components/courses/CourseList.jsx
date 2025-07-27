@@ -36,7 +36,7 @@ const CourseList = () => {
     fetchSubjects();
     fetchRooms();
   }, []);
-
+  
   const fetchCourses = async () => {
     try {
       setLoading(true);
