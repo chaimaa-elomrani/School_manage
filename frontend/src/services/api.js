@@ -1,3 +1,4 @@
+// this file is made for the connection with the backend
 import axios from 'axios';     
 
 // creating axious instance with base configuration 
@@ -13,15 +14,15 @@ import axios from 'axios';
 
 const api = axios.create({
     baseURL: 'http://localhost:8000',
-    timeout: 1000,
+    timeout: 10000,
     headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
+        'Content-Type': 'application/json'
     }
 });
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken'); // Changed from 'token' to 'authToken'
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -41,17 +42,16 @@ api.interceptors.request.use(
 // if the response is unauthorized, we are redirecting the user to the login page
 
 api.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    (error) => {
-        if (error.response.status === 401) {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
-)
+    return Promise.reject(error);
+  }
+);
 
 
 export default api;

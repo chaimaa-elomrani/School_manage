@@ -4,6 +4,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/db.php';
 
 use Core\Router;
+use App\Middleware\CorsMiddleware;
+
+// Handle CORS
+$corsMiddleware = new CorsMiddleware();
+$corsMiddleware->handle();
 
 $router = new Router();
 
