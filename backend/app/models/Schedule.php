@@ -6,22 +6,18 @@ class Schedule implements ISchedule{
     private $id;
     private $course_id;
     private $room_id;
-    private $teacher_id;
     private $date;
     private $start_time;
     private $end_time;
-
 
     public function __construct(array $data){
         $this->id = $data['id'] ?? null;
         $this->course_id = $data['course_id'] ?? null;
         $this->room_id = $data['room_id'] ?? null;
-        $this->teacher_id = $data['teacher_id'] ?? null;
         $this->date = $data['date'] ?? null;
         $this->start_time = $data['start_time'] ?? null;
         $this->end_time = $data['end_time'] ?? null;
     }
-
 
     public function getId() { 
         return $this->id; 
@@ -33,7 +29,7 @@ class Schedule implements ISchedule{
         return $this->room_id; 
     }
     public function getTeacherId() { 
-        return $this->teacher_id; 
+        return null; // Will get from course join
     }
     public function getDate() { 
         return $this->date; 
@@ -50,7 +46,6 @@ class Schedule implements ISchedule{
             'id' => $this->id,
             'course_id' => $this->course_id,
             'room_id' => $this->room_id,
-            'teacher_id' => $this->teacher_id,
             'date' => $this->date,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time

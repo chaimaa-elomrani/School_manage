@@ -5,6 +5,7 @@ import {
   BookOpenIcon, 
   CurrencyDollarIcon 
 } from '@heroicons/react/24/outline';
+import api from '../../services/api';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -260,5 +261,6 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
 
 

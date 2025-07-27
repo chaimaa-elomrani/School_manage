@@ -4,25 +4,25 @@ namespace App\Services;
 
 use App\Models\Schedule;
 use PDO;
+use Core\Db;
 
 class ScheduleService
 {
     private $pdo;
 
-    public function __construct(PDO $pdo)
+    public function __construct()
     {
-        $this->pdo = $pdo;
+        $this->pdo = Db::connection();
     }
 
     public function save(Schedule $schedule)
     {
         $this->pdo->beginTransaction();
         try {
-            $stmt = $this->pdo->prepare('INSERT INTO schedules (course_id, room_id, teacher_id, date, start_time, end_time) VALUES (:course_id, :room_id, :teacher_id, :date, :start_time, :end_time)');
+            $stmt = $this->pdo->prepare('INSERT INTO schedules (course_id, room_id, date, start_time, end_time) VALUES (:course_id, :room_id, :date, :start_time, :end_time)');
             $stmt->execute([
                 'course_id' => $schedule->getCourseId(),
                 'room_id' => $schedule->getRoomId(),
-                'teacher_id' => $schedule->getTeacherId(),
                 'date' => $schedule->getDate(),
                 'start_time' => $schedule->getStartTime(),
                 'end_time' => $schedule->getEndTime()
@@ -31,12 +31,10 @@ class ScheduleService
             $scheduleId = $this->pdo->lastInsertId();
             $this->pdo->commit();
             
-            // Return the schedule with the new ID
             $scheduleData = [
                 'id' => $scheduleId,
                 'course_id' => $schedule->getCourseId(),
                 'room_id' => $schedule->getRoomId(),
-                'teacher_id' => $schedule->getTeacherId(),
                 'date' => $schedule->getDate(),
                 'start_time' => $schedule->getStartTime(),
                 'end_time' => $schedule->getEndTime()
@@ -52,10 +50,21 @@ class ScheduleService
     public function getAll()
     {
         $stmt = $this->pdo->prepare('
-            SELECT s.*, c.name as course_name, r.number as room_number
+            SELECT 
+                s.id,
+                s.course_id,
+                s.room_id,
+                s.date,
+                s.start_time,
+                s.end_time,
+                c.teacher_id,
+                sub.name as course_name,
+                r.number as room_number
             FROM schedules s 
             LEFT JOIN courses c ON s.course_id = c.id
+            LEFT JOIN subjects sub ON c.subject_id = sub.id
             LEFT JOIN rooms r ON s.room_id = r.id
+            ORDER BY s.date, s.start_time
         '); 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -89,7 +98,11 @@ class ScheduleService
 
     public function getByTeacherAndDate($teacherId, $date)
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM schedules WHERE teacher_id = :teacher_id AND date = :date');
+        $stmt = $this->pdo->prepare('
+            SELECT s.* FROM schedules s 
+            JOIN courses c ON s.course_id = c.id 
+            WHERE c.teacher_id = :teacher_id AND s.date = :date
+        ');
         $stmt->execute(['teacher_id' => $teacherId, 'date' => $date]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -130,12 +143,11 @@ class ScheduleService
     {
         $this->pdo->beginTransaction();
         try {
-            $stmt = $this->pdo->prepare('UPDATE schedules SET course_id = :course_id, room_id = :room_id, teacher_id = :teacher_id, date = :date, start_time = :start_time, end_time = :end_time WHERE id = :id');
+            $stmt = $this->pdo->prepare('UPDATE schedules SET course_id = :course_id, room_id = :room_id, date = :date, start_time = :start_time, end_time = :end_time WHERE id = :id');
             $stmt->execute([
                 'id' => $schedule->getId(),
                 'course_id' => $schedule->getCourseId(),
                 'room_id' => $schedule->getRoomId(),
-                'teacher_id' => $schedule->getTeacherId(),
                 'date' => $schedule->getDate(),
                 'start_time' => $schedule->getStartTime(),
                 'end_time' => $schedule->getEndTime()
@@ -153,5 +165,46 @@ class ScheduleService
         $stmt = $this->pdo->prepare('DELETE FROM schedules WHERE id = :id');
         $result = $stmt->execute(['id' => $id]);
         return $result;
+    }
+
+    public function testConnection()
+    {
+        try {
+            // Check if schedules table has any data
+            $stmt = $this->pdo->prepare('SELECT COUNT(*) as count FROM schedules');
+            $stmt->execute();
+            $count = $stmt->fetch(PDO::FETCH_ASSOC);
+            error_log("Total schedules in database: " . $count['count']);
+            
+            // Check schedules table structure
+            $stmt = $this->pdo->prepare('DESCRIBE schedules');
+            $stmt->execute();
+            $structure = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            error_log("Schedules table structure: " . json_encode($structure));
+            
+            // Check sample schedule data
+            $stmt = $this->pdo->prepare('SELECT * FROM schedules LIMIT 3');
+            $stmt->execute();
+            $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            error_log("Sample schedules: " . json_encode($schedules));
+            
+            // Check if related tables exist
+            $tables = ['courses', 'subjects', 'rooms'];
+            foreach ($tables as $table) {
+                try {
+                    $stmt = $this->pdo->prepare("SELECT COUNT(*) as count FROM $table");
+                    $stmt->execute();
+                    $tableCount = $stmt->fetch(PDO::FETCH_ASSOC);
+                    error_log("Table $table has " . $tableCount['count'] . " records");
+                } catch (\Exception $e) {
+                    error_log("Table $table does not exist or error: " . $e->getMessage());
+                }
+            }
+            
+            return $count['count'];
+        } catch (\Exception $e) {
+            error_log("Database test error: " . $e->getMessage());
+            throw $e;
+        }
     }
 }

@@ -162,13 +162,16 @@ const StudentList = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Student
+                Student Info
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contact
+                Contact Details
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Birth Date
+                Personal Info
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Academic Info
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -177,48 +180,131 @@ const StudentList = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredStudents.map((student) => (
-              <tr key={student.id} className="hover:bg-gray-50">
+              <tr key={student.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium">
-                        {student.nom?.charAt(0)}{student.prenom?.charAt(0)}
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                      <span className="text-white font-bold text-lg">
+                        {(student.first_name || student.prenom)?.charAt(0)}
+                        {(student.last_name || student.nom)?.charAt(0)}
                       </span>
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {student.nom} {student.prenom}
+                      <div className="text-lg font-bold text-gray-900">
+                        {student.first_name || student.prenom} {student.last_name || student.nom}
                       </div>
-                      <div className="text-sm text-gray-500">ID: {student.id}</div>
+                      <div className="text-sm text-gray-500 flex items-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          ID: {student.id}
+                        </span>
+                        {student.person_id && (
+                          <span className="ml-2 text-xs text-gray-400">
+                            Person ID: {student.person_id}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </td>
+                
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{student.email}</div>
-                  <div className="text-sm text-gray-500">{student.telephone}</div>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-sm text-gray-900">
+                      <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="font-medium">{student.email}</span>
+                    </div>
+                    {(student.telephone || student.phone) && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        {student.telephone || student.phone}
+                      </div>
+                    )}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {student.date_naissance}
+                
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="space-y-2">
+                    {student.date_naissance && (
+                      <div className="flex items-center text-sm text-gray-900">
+                        <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span className="font-medium">
+                          {new Date(student.date_naissance).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    {student.adresse && (
+                      <div className="flex items-start text-sm text-gray-600">
+                        <svg className="w-4 h-4 mr-2 mt-0.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="max-w-xs truncate" title={student.adresse}>
+                          {student.adresse}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                  <button
-                    onClick={() => openModal('view', student)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    <EyeIcon className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => openModal('edit', student)}
-                    className="text-indigo-600 hover:text-indigo-900"
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(student.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    <TrashIcon className="h-5 w-5" />
-                  </button>
+                
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="space-y-2">
+                    {student.student_number && (
+                      <div>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          #{student.student_number}
+                        </span>
+                        <div className="text-xs text-gray-500 mt-1">Student Number</div>
+                      </div>
+                    )}
+                    {student.class_id && (
+                      <div>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          Class {student.class_id}
+                        </span>
+                      </div>
+                    )}
+                    {student.room_id && (
+                      <div className="text-xs text-gray-500">
+                        Room: <span className="font-medium text-gray-700">{student.room_id}</span>
+                      </div>
+                    )}
+                  </div>
+                </td>
+                
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => openModal('view', student)}
+                      className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50 transition-colors"
+                      title="View Details"
+                    >
+                      <EyeIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => openModal('edit', student)}
+                      className="text-indigo-600 hover:text-indigo-900 p-2 rounded-full hover:bg-indigo-50 transition-colors"
+                      title="Edit Student"
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(student.id)}
+                      className="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-50 transition-colors"
+                      title="Delete Student"
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -227,7 +313,13 @@ const StudentList = () => {
         
         {filteredStudents.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No students found</p>
+            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No students found</h3>
+            <p className="text-gray-500">Try adjusting your search criteria</p>
           </div>
         )}
       </div>
@@ -356,4 +448,5 @@ const StudentList = () => {
 };
 
 export default StudentList;
+
 

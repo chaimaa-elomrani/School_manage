@@ -40,7 +40,6 @@ $router->delete('/deleteCourse/{id}', 'CourseController@delete');
 
 // schedule routes tested 
 $router->post('/createSchedule', 'ScheduleController@create');
-$router->get('/showSchedules', 'ScheduleController@getAll');
 $router->get('/showSchedule/{id}', 'ScheduleController@getById');
 $router->post('/updateSchedule/{id}', 'ScheduleController@update');
 $router->delete('/deleteSchedule/{id}', 'ScheduleController@delete');
@@ -119,4 +118,7 @@ $router->get('/planning/conflicts', 'PlanningController@getConflicts');
 
 $router->get('/showPayments', 'PaymentController@getAll');
 
+
 $router->get('/showEnrollments', 'EnrollmentController@getAll');
+$router->get('/showSchedules', 'ScheduleController@showSchedules');
+$router->get('/schedules', 'ScheduleController@getSchedules');

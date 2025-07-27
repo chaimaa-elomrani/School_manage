@@ -10,6 +10,7 @@ import StudentDashboard from './components/dashboards/StudentDashboard';
 import Layout from './components/layout/Layout';
 import TeacherList from './components/teachers/TeacherList';
 import CourseList from './components/courses/CourseList';
+import ScheduleList from './components/schedules/ScheduleList';
 import './App.css';
 
 // Protected Route Component
@@ -104,7 +105,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <div className="text-center py-12">Schedule Page Coming Soon...</div>
+                    <ScheduleList />
                   </Layout>
                 </ProtectedRoute>
               } 
