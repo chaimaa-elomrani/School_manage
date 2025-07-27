@@ -1,4 +1,4 @@
-gnup import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import AdminDashboard from './dashboards/AdminDashboard';
 import TeacherDashboard from './dashboards/TeacherDashboard';
 import StudentDashboard from './dashboards/StudentDashboard';

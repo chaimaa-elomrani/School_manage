@@ -1,153 +1,72 @@
 <?php
-namespace App\Services;
-use App\Models\Grades;
-use App\Interfaces\INoteService;
-use App\Interfaces\ISubject;
-use App\Interfaces\IObserver;
-use PDO;
 
-class GradeService implements INoteService, ISubject
+namespace App\Services;
+
+class GradeService
 {
     private $pdo;
-    private $observers = [];
 
-    public function __construct(PDO $pdo)
+    public function __construct($pdo)
     {
         $this->pdo = $pdo;
     }
 
-    public function attach(IObserver $observer): void
+    public function getAll()
     {
-        $this->observers[] = $observer;
-    }
-
-    public function detach(IObserver $observer): void
-    {
-        $key = array_search($observer, $this->observers);
-        if ($key !== false) {
-            unset($this->observers[$key]);
-        }
-    }
-
-    public function notify(string $event, array $data): void
-    {
-        foreach ($this->observers as $observer) {
-            $observer->update($event, $data);
-        }
-    }
-
-    public function save(Grades $grade): Grades
-    {
-        $this->pdo->beginTransaction();
-        try {
-            $stmt = $this->pdo->prepare("INSERT INTO grades (evaluation_id, student_id, score) VALUES (:evaluation_id, :student_id, :score)");
-            $stmt->execute([
-                'evaluation_id' => $grade->getEvaluationId(),
-                'student_id' => $grade->getStudentId(),
-                'score' => $grade->getScore()
-            ]);
-            
-            $gradeId = $this->pdo->lastInsertId();
-            $this->pdo->commit();
-            
-            $savedGrade = new Grades([
-                'id' => $gradeId,
-                'evaluation_id' => $grade->getEvaluationId(),
-                'student_id' => $grade->getStudentId(),
-                'score' => $grade->getScore()
-            ]);
-
-            // Notify observers
-            $this->notify('grade_created', $savedGrade->toArray());
-            
-            return $savedGrade;
-        } catch (\Exception $e) {
-            $this->pdo->rollback();
-            throw $e;
-        }
-    }
-
-    public function getAll(): array
-    {
-        $stmt = $this->pdo->prepare(
-        'SELECT g.id, g.evaluation_id , g.student_id , g.score ,  s.person_id ,
-         p.first_name , p.last_name FROM grades g
-         JOIN students s ON g.student_id = s.id
-         JOIN person p ON s.person_id = p.id');
+        $stmt = $this->pdo->prepare('
+            SELECT g.*, e.title as evaluation_title, 
+                   c.name as course_name,
+                   CONCAT(p.first_name, " ", p.last_name) as student_name
+            FROM grades g 
+            LEFT JOIN evaluations e ON g.evaluation_id = e.id
+            LEFT JOIN courses c ON e.subject_id = c.subject_id
+            LEFT JOIN students s ON g.student_id = s.id
+            LEFT JOIN person p ON s.person_id = p.id
+            ORDER BY g.created_at DESC
+        '); 
         $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $grades = [];
-        foreach ($rows as $row) {
-            $grades[] = new Grades($row);
-        }
-        return $grades;
-    }
-    public function getById($id): Grades|null
-    {
-        $stmt = $this->pdo->prepare(
-        'SELECT g.id, g.evaluation_id , g.student_id , g.score , s.person_id , 
-        p.first_name , p.last_name  FROM grades g
-        JOIN students s ON g.student_id = s.id
-        JOIN person p ON s.person_id = p.id 
-        WHERE g.id = :id');
-        $stmt->execute(['id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) {
-            return null;
-        }
-        return new Grades($row);
-    }
-    
-
-
-    public function update(Grades $grade): Grades
-    {
-        $this->pdo->beginTransaction();
-        try {
-            $stmt = $this->pdo->prepare('UPDATE grades SET evaluation_id = :evaluation_id, student_id = :student_id, score = :score WHERE id = :id');
-            $stmt->execute([
-                'id' => $grade->getId(),
-                'evaluation_id' => $grade->getEvaluationId(),
-                'student_id' => $grade->getStudentId(),
-                'score' => $grade->getScore()
-            ]);
-            $this->pdo->commit();
-            return $grade;
-        } catch (\Exception $e) {
-            $this->pdo->rollback();
-            throw $e;
-        }
-    }
-    public function delete($id): bool
-    {
-        $stmt = $this->pdo->prepare('DELETE FROM grades WHERE id = :id');
-        $result = $stmt->execute(['id' => $id]);
-        return $result;
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function getGradesByStudent($studentId): array
+    public function getById($id)
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM grades WHERE student_id = :student_id');
-        $stmt->execute(['student_id' => $studentId]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        $grades = [];
-        foreach ($rows as $row) {
-            $grades[] = new Grades($row);
-        }
-        return $grades;
+        $stmt = $this->pdo->prepare('SELECT * FROM grades WHERE id = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function getGradesByEvaluation($evaluationId): array
+    public function create($data)
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM grades WHERE evaluation_id = :evaluation_id');
-        $stmt->execute(['evaluation_id' => $evaluationId]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        $grades = [];
-        foreach ($rows as $row) {
-            $grades[] = new Grades($row);
-        }
-        return $grades;
+        $stmt = $this->pdo->prepare('
+            INSERT INTO grades (student_id, evaluation_id, score, created_at) 
+            VALUES (?, ?, ?, NOW())
+        ');
+        $stmt->execute([
+            $data['student_id'],
+            $data['evaluation_id'],
+            $data['score']
+        ]);
+        return $this->pdo->lastInsertId();
+    }
+
+    public function update($id, $data)
+    {
+        $stmt = $this->pdo->prepare('
+            UPDATE grades 
+            SET student_id = ?, evaluation_id = ?, score = ?, updated_at = NOW()
+            WHERE id = ?
+        ');
+        return $stmt->execute([
+            $data['student_id'],
+            $data['evaluation_id'],
+            $data['score'],
+            $id
+        ]);
+    }
+
+    public function delete($id)
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM grades WHERE id = ?');
+        return $stmt->execute([$id]);
     }
 }

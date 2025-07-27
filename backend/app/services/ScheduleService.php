@@ -51,15 +51,14 @@ class ScheduleService
 
     public function getAll()
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM schedules ORDER BY date, start_time');
+        $stmt = $this->pdo->prepare('
+            SELECT s.*, c.name as course_name, r.number as room_number
+            FROM schedules s 
+            LEFT JOIN courses c ON s.course_id = c.id
+            LEFT JOIN rooms r ON s.room_id = r.id
+        '); 
         $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        $schedules = [];
-        foreach ($rows as $row) {
-            $schedules[] = new Schedule($row);
-        }
-        return $schedules;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getById($id)

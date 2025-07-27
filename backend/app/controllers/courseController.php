@@ -46,7 +46,7 @@ class CourseController
             foreach ($courses as $course) {
                 $coursesArray[] = $course->toArray();
             }
-            echo json_encode($coursesArray);
+            echo json_encode(['message' => 'Courses retrieved successfully', 'data' => $coursesArray]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }

@@ -31,32 +31,47 @@ const StudentDashboard = () => {
     try {
       setLoading(true);
       
-      // Fetch student's data
-      const [schedulesRes, gradesRes, coursesRes] = await Promise.all([
-        api.get('/showSchedules'),
-        api.get('/showGrades'),
-        api.get('/showCourses')
+      // Fetch student's data with proper error handling
+      const [schedulesRes, gradesRes, coursesRes, enrollmentsRes] = await Promise.all([
+        api.get('/showSchedules').catch(err => ({ data: [] })),
+        api.get('/showGrades').catch(err => ({ data: [] })),
+        api.get('/showCourses').catch(err => ({ data: [] })),
+        api.get('/showEnrollments').catch(err => ({ data: [] }))
       ]);
 
-      // Filter data for current student
-      const studentGrades = gradesRes.data?.filter(grade => 
-        grade.student_id === user.id
-      ) || [];
+      // Extract data arrays properly
+      const schedules = schedulesRes.data?.data || schedulesRes.data || [];
+      const allGrades = gradesRes.data?.data || gradesRes.data || [];
+      const allCourses = coursesRes.data?.data || coursesRes.data || [];
+      const allEnrollments = enrollmentsRes.data?.data || enrollmentsRes.data || [];
 
-      const studentCourseIds = [...new Set(studentGrades.map(grade => grade.course_id))];
-      const enrolledCourses = coursesRes.data?.filter(course => 
+      // Filter enrollments for current student
+      const studentEnrollments = allEnrollments.filter(enrollment => 
+        enrollment.student_id === user.id && enrollment.status === 'active'
+      );
+
+      // Get course IDs from student's enrollments
+      const studentCourseIds = studentEnrollments.map(enrollment => enrollment.course_id);
+      
+      // Filter courses for enrolled courses
+      const enrolledCourses = allCourses.filter(course => 
         studentCourseIds.includes(course.id)
-      ) || [];
+      );
 
-      // Get today's date
+      // Filter grades for current student
+      const studentGrades = allGrades.filter(grade => 
+        grade.student_id === user.id
+      );
+
+      // Get today's date in YYYY-MM-DD format
       const today = new Date().toISOString().split('T')[0];
-      const todayClasses = schedulesRes.data?.filter(schedule => 
+      const todayClasses = schedules.filter(schedule => 
         schedule.date === today && studentCourseIds.includes(schedule.course_id)
-      ) || [];
+      );
 
-      // Count completed vs pending assignments (grades with/without values)
-      const completedAssignments = studentGrades.filter(grade => grade.note).length;
-      const pendingAssignments = studentGrades.filter(grade => !grade.note).length;
+      // Count completed vs pending assignments
+      const completedAssignments = studentGrades.filter(grade => grade.score !== null).length;
+      const pendingAssignments = studentGrades.filter(grade => grade.score === null).length;
 
       setStats({
         enrolledCourses: enrolledCourses.length,
@@ -207,4 +222,6 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
+
+
 

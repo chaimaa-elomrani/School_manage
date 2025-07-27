@@ -7,8 +7,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    role: 'admin'
+    password: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -77,23 +76,6 @@ const Login = () => {
                 {error}
               </div>
             )}
-
-            <div className="space-y-2">
-              <label htmlFor="role" className="block text-sm font-semibold text-black">
-                Login As
-              </label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:border-black focus:outline-none transition-colors"
-              >
-                <option value="admin">Administrator</option>
-                <option value="teacher">Teacher</option>
-                <option value="student">Student</option>
-                <option value="parent">Parent</option>
-              </select>
-            </div>
 
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-semibold text-black">

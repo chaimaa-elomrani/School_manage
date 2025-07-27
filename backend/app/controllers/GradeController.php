@@ -2,9 +2,12 @@
 
 namespace App\Controllers;
 use App\Services\GradeService;
+use App\Models\Grades;
+use App\Services\NotificationService;
+use App\Observers\GradeNotificationObserver;
 use Core\Db;
 
-class GradesController
+class GradeController
 {
     private $gradeService;
 
@@ -15,16 +18,11 @@ class GradesController
         } else {
             $pdo = Db::connection();
             $this->gradeService = new GradeService($pdo);
-        }
-    }
-
-    public function getAll()
-    {
-        try {
-            $grades = $this->gradeService->getAll();
-            echo json_encode(['message' => 'Grades retrieved successfully', 'data' => $grades]);
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
+            
+            // Attach observer
+            $notificationService = new NotificationService($pdo);
+            $observer = new GradeNotificationObserver($notificationService);
+            $this->gradeService->attach($observer);
         }
     }
 
@@ -37,18 +35,10 @@ class GradesController
         }
 
         try {
-            $result = $this->gradeService->create($input);
+            $grade = new Grades($input);
+            $result = $this->gradeService->save($grade);
             echo json_encode(['message' => 'Grade created successfully', 'data' => $result]);
-        } catch (\Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    public function getById($id)
-    {
-        try {
-            $grade = $this->gradeService->getById($id);
-            echo json_encode(['message' => 'Grade found', 'data' => $grade]);
+            return $result;
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
@@ -63,7 +53,8 @@ class GradesController
         }
 
         try {
-            $result = $this->gradeService->update($id, $input);
+            $grade = new Grades($input);
+            $result = $this->gradeService->update($grade);
             echo json_encode(['message' => 'Grade updated successfully', 'data' => $result]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
@@ -79,4 +70,33 @@ class GradesController
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
+
+    public function getAll() {
+        try {
+            $grades = $this->gradeService->getAll();
+            $gradesArray = [];
+            foreach ($grades as $grade) {
+                $gradesArray[] = $grade->toArray();
+            }
+            echo json_encode(['message' => 'Grades retrieved successfully', 'data' => $gradesArray]);
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function getById($id)
+    {
+        try {
+            $grade = $this->gradeService->getById($id);
+            if ($grade) {
+                echo json_encode(['message' => 'Grade found', 'data' => $grade->toArray()]);
+            } else {
+                echo json_encode(['error' => 'Grade not found']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    
 }

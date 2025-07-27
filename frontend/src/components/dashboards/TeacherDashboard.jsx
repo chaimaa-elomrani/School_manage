@@ -32,19 +32,25 @@ const TeacherDashboard = () => {
       
       // Fetch teacher's courses and schedules
       const [coursesRes, schedulesRes, gradesRes] = await Promise.all([
-        api.get('/showCourses'),
-        api.get('/showSchedules'),
-        api.get('/showGrades')
+        api.get('/showCourses').catch(err => ({ data: [] })),
+        api.get('/showSchedules').catch(err => ({ data: [] })),
+        api.get('/showGrades').catch(err => ({ data: [] }))
       ]);
 
-      // Filter data for current teacher
-      const teacherCourses = coursesRes.data?.filter(course => 
+      // Extract data arrays properly
+      const allCourses = coursesRes.data?.data || coursesRes.data || [];
+      const allSchedules = schedulesRes.data?.data || schedulesRes.data || [];
+      const allGrades = gradesRes.data?.data || gradesRes.data || [];
+
+      // Filter courses for current teacher
+      const teacherCourses = allCourses.filter(course => 
         course.teacher_id === user.id
-      ) || [];
+      );
       
-      const teacherSchedules = schedulesRes.data?.filter(schedule => 
+      // Filter schedules for teacher's courses
+      const teacherSchedules = allSchedules.filter(schedule => 
         teacherCourses.some(course => course.id === schedule.course_id)
-      ) || [];
+      );
 
       // Get today's date
       const today = new Date().toISOString().split('T')[0];
@@ -52,13 +58,20 @@ const TeacherDashboard = () => {
         schedule.date === today
       );
 
-      // Count pending grades (grades without a value)
-      const pendingGrades = gradesRes.data?.filter(grade => 
-        !grade.note && teacherCourses.some(course => course.id === grade.course_id)
-      ).length || 0;
+      // Count pending grades (grades without a score)
+      const pendingGrades = allGrades.filter(grade => 
+        !grade.score && teacherCourses.some(course => course.id === grade.course_id)
+      ).length;
+
+      // Estimate student count (you might need to adjust this based on your data)
+      const totalStudents = teacherCourses.reduce((total, course) => {
+        const courseGrades = allGrades.filter(grade => grade.course_id === course.id);
+        const uniqueStudents = [...new Set(courseGrades.map(grade => grade.student_id))];
+        return total + uniqueStudents.length;
+      }, 0);
 
       setStats({
-        myStudents: teacherCourses.reduce((total, course) => total + (course.student_count || 0), 0),
+        myStudents: totalStudents,
         myCourses: teacherCourses.length,
         todayClasses: todayClasses.length,
         pendingGrades: pendingGrades
@@ -196,3 +209,4 @@ const TeacherDashboard = () => {
 };
 
 export default TeacherDashboard;
+

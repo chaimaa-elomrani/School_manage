@@ -65,11 +65,10 @@ $router->delete('/deleteEvaluation/{id}', 'EvaluationsController@delete');
 
 // routes tested
 $router->post('/createGrade', 'GradesController@create');
-$router->get('/showGrades', 'GradesController@getAll');
+$router->get('/showGrade/{id}', 'GradesController@getById');
 $router->get('/showGrade/{id}', 'GradesController@getById');
 $router->post('/updateGrade/{id}', 'GradesController@update');
 $router->delete('/deleteGrade/{id}', 'GradesController@delete');
-
 
 // routes tested 
 $router->post('/createBulletin', 'BulletinController@create');
@@ -118,3 +117,6 @@ $router->post('/planning/create', 'PlanningController@create');
 $router->get('/planning/check', 'PlanningController@checkAvailability');
 $router->get('/planning/conflicts', 'PlanningController@getConflicts');
 
+$router->get('/showPayments', 'PaymentController@getAll');
+
+$router->get('/showEnrollments', 'EnrollmentController@getAll');
