@@ -55,7 +55,7 @@ class StudentService{
 
     public function getAll(){   
         $stmt = $this->pdo->prepare('
-            SELECT s.id, s.person_id, s.student_number, s.class_id,
+            SELECT s.id, s.person_id, s.student_number, s.room_id,
                    p.first_name, p.last_name, p.email, p.phone, p.role
             FROM students s 
             JOIN person p ON s.person_id = p.id
@@ -64,7 +64,7 @@ class StudentService{
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC); 
         $students = []; 
         
-        foreach($rows as $row){ // on parcourt le tableau des données et on crée un nouvel étudiant pour chaque ligne
+        foreach($rows as $row){ 
             $students[] = new Student($row);
         }
 
@@ -84,7 +84,7 @@ class StudentService{
 
     public function getById($id){
         $stmt = $this->pdo->prepare('
-            SELECT s.id, s.person_id, s.student_number, s.class_id,
+            SELECT s.id, s.person_id, s.student_number, s.room_id,
                    p.first_name, p.last_name, p.email, p.phone, p.role
             FROM students s 
             JOIN person p ON s.person_id = p.id 

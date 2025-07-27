@@ -25,19 +25,43 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       
+      console.log('Fetching admin data...'); // Debug log
+      
       const [studentsRes, teachersRes, coursesRes, paymentsRes, gradesRes] = await Promise.all([
-        api.get('/showStudent').catch(() => ({ data: { data: [] } })),
-        api.get('/showTeacher').catch(() => ({ data: { data: [] } })),
-        api.get('/showCourses').catch(() => ({ data: [] })),
-        api.get('/showPayments').catch(() => ({ data: [] } )),
-        api.get('/showGrades').catch(() => ({ data: [] } ))
+        api.get('/showStudent').catch(err => {
+          console.error('Students API error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/showTeacher').catch(err => {
+          console.error('Teachers API error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/showCourses').catch(err => {
+          console.error('Courses API error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/showPayments').catch(err => {
+          console.error('Payments API error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/showGrades').catch(err => {
+          console.error('Grades API error:', err);
+          return { data: { data: [] } };
+        })
       ]);
+
+      console.log('Students response:', studentsRes.data); // Debug log
+      console.log('Teachers response:', teachersRes.data); // Debug log
+      console.log('Courses response:', coursesRes.data); // Debug log
 
       const students = studentsRes.data?.data || [];
       const teachers = teachersRes.data?.data || [];
       const courses = coursesRes.data?.data || coursesRes.data || [];
       const payments = paymentsRes.data?.data || paymentsRes.data || [];
       const grades = gradesRes.data?.data || gradesRes.data || [];
+
+      console.log('Processed students:', students); // Debug log
+      console.log('Processed teachers:', teachers); // Debug log
 
       // Calculate total revenue from payments
       const totalRevenue = payments
@@ -50,6 +74,13 @@ const AdminDashboard = () => {
         totalCourses: courses.length,
         totalRevenue: totalRevenue
       });
+
+      console.log('Final stats:', {
+        totalStudents: students.length,
+        totalTeachers: teachers.length,
+        totalCourses: courses.length,
+        totalRevenue: totalRevenue
+      }); // Debug log
 
       // Get recent enrollments (students with recent grades)
       const recentGrades = grades
@@ -229,4 +260,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
 

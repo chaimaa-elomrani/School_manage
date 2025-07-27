@@ -11,22 +11,30 @@ import {
 const CourseList = () => {
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('create');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [formData, setFormData] = useState({
-    nom: '',
+    title: '',
     description: '',
     teacher_id: '',
-    credits: '',
-    duree: ''
+    subject_id: '',
+    room_id: '',
+    duration: '',
+    level: '',
+    start_date: '',
+    end_date: ''
   });
 
   useEffect(() => {
     fetchCourses();
     fetchTeachers();
+    fetchSubjects();
+    fetchRooms();
   }, []);
 
   const fetchCourses = async () => {
@@ -47,6 +55,24 @@ const CourseList = () => {
       setTeachers(response.data.data || []);
     } catch (err) {
       console.error('Fetch teachers error:', err);
+    }
+  };
+
+  const fetchSubjects = async () => {
+    try {
+      const response = await api.get('/showSubjects');
+      setSubjects(response.data.data || []);
+    } catch (err) {
+      console.error('Fetch subjects error:', err);
+    }
+  };
+
+  const fetchRooms = async () => {
+    try {
+      const response = await api.get('/showRooms');
+      setRooms(response.data.data || []);
+    } catch (err) {
+      console.error('Fetch rooms error:', err);
     }
   };
 
@@ -93,11 +119,15 @@ const CourseList = () => {
     setSelectedCourse(course);
     if (course) {
       setFormData({
-        nom: course.nom || '',
+        title: course.name || course.title || '',
         description: course.description || '',
         teacher_id: course.teacher_id || '',
-        credits: course.credits || '',
-        duree: course.duree || ''
+        subject_id: course.subject_id || '',
+        room_id: course.room_id || '',
+        duration: course.duration || '',
+        level: course.level || '',
+        start_date: course.start_date || '',
+        end_date: course.end_date || ''
       });
     } else {
       resetForm();
@@ -107,11 +137,15 @@ const CourseList = () => {
 
   const resetForm = () => {
     setFormData({
-      nom: '',
+      title: '',
       description: '',
       teacher_id: '',
-      credits: '',
-      duree: ''
+      subject_id: '',
+      room_id: '',
+      duration: '',
+      level: '',
+      start_date: '',
+      end_date: ''
     });
   };
 
@@ -121,8 +155,9 @@ const CourseList = () => {
   };
 
   const filteredCourses = courses.filter(course =>
-    course.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    (course.name || course.title)?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    course.teacher_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    course.subject_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -164,45 +199,77 @@ const CourseList = () => {
       {/* Courses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCourses.map((course) => (
-          <div key={course.id} className="bg-white rounded-lg shadow p-6">
+          <div key={course.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{course.nom}</h3>
+              <h3 className="text-xl font-bold text-gray-900 truncate">{course.name || course.title}</h3>
               <div className="flex space-x-2">
                 <button
                   onClick={() => openModal('view', course)}
-                  className="text-blue-600 hover:text-blue-900"
+                  className="text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   <EyeIcon className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => openModal('edit', course)}
-                  className="text-indigo-600 hover:text-indigo-900"
+                  className="text-indigo-600 hover:text-indigo-800 transition-colors"
                 >
                   <PencilIcon className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => handleDelete(course.id)}
-                  className="text-red-600 hover:text-red-900"
+                  className="text-red-600 hover:text-red-800 transition-colors"
                 >
                   <TrashIcon className="h-5 w-5" />
                 </button>
               </div>
             </div>
             
-            <p className="text-gray-600 text-sm mb-4">{course.description}</p>
-            
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Teacher:</span>
-                <span className="font-medium">{getTeacherName(course.teacher_id)}</span>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm font-medium">
+                    {course.teacher_name ? course.teacher_name.split(' ').map(n => n[0]).join('') : 'T'}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Teacher</p>
+                  <p className="text-sm text-gray-600">{course.teacher_name || 'Not assigned'}</p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Credits:</span>
-                <span className="font-medium">{course.credits}</span>
+              
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-gray-100">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Duration</p>
+                  <p className="text-sm font-semibold text-gray-900">{course.duration} hours</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Level</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {course.level || 'Not specified'}
+                  </p>
+                  
+                  
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Duration:</span>
-                <span className="font-medium">{course.duree} hours</span>
+              
+              <div className="pt-3 border-t border-gray-100">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Schedule</p>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Start:</span>
+                    <span className="font-medium text-gray-900">
+                      {course.start_date ? new Date(course.start_date).toLocaleDateString() : 'TBD'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">End:</span>
+                    <span className="font-medium text-gray-900">
+                      {course.end_date ? new Date(course.end_date).toLocaleDateString() : 'TBD'}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -228,11 +295,11 @@ const CourseList = () => {
               <form onSubmit={modalMode === 'create' ? handleCreate : handleUpdate}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Course Name</label>
+                    <label className="block text-sm font-medium text-gray-700">Course Title</label>
                     <input
                       type="text"
-                      value={formData.nom}
-                      onChange={(e) => setFormData({...formData, nom: e.target.value})}
+                      value={formData.title}
+                      onChange={(e) => setFormData({...formData, title: e.target.value})}
                       disabled={modalMode === 'view'}
                       className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                       required
@@ -268,29 +335,61 @@ const CourseList = () => {
                     </select>
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Credits</label>
-                    <input
-                      type="number"
-                      value={formData.credits}
-                      onChange={(e) => setFormData({...formData, credits: e.target.value})}
-                      disabled={modalMode === 'view'}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                      min="1"
-                      max="10"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Duration (hours)</label>
+                      <input
+                        type="number"
+                        value={formData.duration}
+                        onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                        disabled={modalMode === 'view'}
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                        min="1"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Level</label>
+                      <select
+                        value={formData.level}
+                        onChange={(e) => setFormData({...formData, level: e.target.value})}
+                        disabled={modalMode === 'view'}
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      >
+                        <option value="">Select level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                      </select>
+                    </div>
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Duration (hours)</label>
-                    <input
-                      type="number"
-                      value={formData.duree}
-                      onChange={(e) => setFormData({...formData, duree: e.target.value})}
-                      disabled={modalMode === 'view'}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                      min="1"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                      <input
+                        type="date"
+                        value={formData.start_date}
+                        onChange={(e) => setFormData({...formData, start_date: e.target.value})}
+                        disabled={modalMode === 'view'}
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">End Date</label>
+                      <input
+                        type="date"
+                        value={formData.end_date}
+                        onChange={(e) => setFormData({...formData, end_date: e.target.value})}
+                        disabled={modalMode === 'view'}
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
                 
@@ -321,3 +420,10 @@ const CourseList = () => {
 };
 
 export default CourseList;
+
+
+
+
+
+
+

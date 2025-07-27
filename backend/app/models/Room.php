@@ -9,6 +9,7 @@ class Room
     private $capacity;
     private $type;
     private $equipment;
+    private $level;
 
     public function __construct(array $data = [])
     {
@@ -17,6 +18,7 @@ class Room
         $this->capacity = $data['capacity'] ?? 0;
         $this->type = $data['type'] ?? '';
         $this->equipment = $data['equipment'] ?? '';
+        $this->level = $data['level'] ?? '';
     }
 
     public function toArray(): array
@@ -34,4 +36,5 @@ class Room
     public function getId() { return $this->id; }
     public function getName() { return $this->name; }
     public function getCapacity() { return $this->capacity; }
+    public function getLevel() { return $this->level; }
 }

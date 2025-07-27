@@ -72,6 +72,7 @@ class CourseController
         }
 
         try {
+            $input['id'] = $id; // Add the ID to the input data
             $course = new Course($input);
             $results = $this->courseService->update($course);
             echo json_encode(['message' => 'Course updated successfully', 'data' => $results]);
