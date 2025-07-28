@@ -51,7 +51,8 @@ class PlanningStrategy implements IPlanningStrategy
             throw new \Exception("Schedule not found");
         }
 
-        return $this->scheduleService->delete($scheduleId);
+        $this->scheduleService->delete($scheduleId);
+        return true;
     }
 
     public function isAvailable(Course $course, Room $room, DateTime $date, string $startTime, string $endTime): bool

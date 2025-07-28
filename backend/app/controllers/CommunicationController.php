@@ -11,14 +11,18 @@ use Core\Db;
 
 class CommunicationController
 {
+    
     private $communicationFacade;
 
     public function __construct()
     {
         $pdo = Db::connection();
         
+        // Load email configuration
+        $emailConfig = include __DIR__ . '/../../config/email.php';
+        
         // Initialize channels and services
-        $emailChannel = new EmailChannel();
+        $emailChannel = new EmailChannel($emailConfig);
         $smsChannel = new SMSChannel();
         $messagingService = new MessagingService($pdo);
         $notificationService = new NotificationService($pdo);
@@ -35,23 +39,44 @@ class CommunicationController
 
     public function sendEmailNotification()
     {
-        $input = json_decode(file_get_contents('php://input'), true);
+        header('Content-Type: application/json');
         
-        if (!isset($input['email'], $input['title'], $input['message'])) {
-            echo json_encode(['error' => 'Missing required fields']);
-            return;
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            error_log("Email request received: " . json_encode($input));
+            
+            if (!isset($input['email'], $input['title'], $input['message'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Missing required fields', 'success' => false]);
+                return;
+            }
+
+            // Load email configuration
+            $emailConfig = include __DIR__ . '/../../config/email.php';
+            
+            // Create email channel
+            $emailChannel = new \App\Services\EmailChannel($emailConfig);
+            
+            // Send email
+            $result = $emailChannel->sendEmail(
+                $input['email'],
+                $input['title'],
+                $input['message']
+            );
+
+            error_log("Email send result: " . ($result ? 'SUCCESS' : 'FAILED'));
+
+            echo json_encode([
+                'success' => $result,
+                'message' => $result ? 'Email sent successfully' : 'Failed to send email'
+            ]);
+
+        } catch (\Exception $e) {
+            error_log("Email controller error: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage(), 'success' => false]);
         }
-
-        $result = $this->communicationFacade->sendNotificationByEmail(
-            $input['email'],
-            $input['title'],
-            $input['message']
-        );
-
-        echo json_encode([
-            'success' => $result,
-            'message' => $result ? 'Email sent successfully' : 'Failed to send email'
-        ]);
     }
 
     public function sendSMSNotification()
@@ -121,3 +146,6 @@ class CommunicationController
         ]);
     }
 }
+
+
+

@@ -64,6 +64,7 @@ const CourseList = () => {
       setSubjects(response.data.data || []);
     } catch (err) {
       console.error('Fetch subjects error:', err);
+      setSubjects([]); // Set empty array on error
     }
   };
 
@@ -420,6 +421,7 @@ const CourseList = () => {
 };
 
 export default CourseList;
+
 
 
 

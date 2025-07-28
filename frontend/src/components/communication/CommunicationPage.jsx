@@ -57,9 +57,11 @@ const CommunicationPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, []); // Remove activeTab dependency to prevent multiple calls
 
   const fetchData = async () => {
+    if (loading) return; // Prevent multiple simultaneous calls
+    
     try {
       setLoading(true);
       setError('');
@@ -323,7 +325,7 @@ const CommunicationPage = () => {
             <div className="space-y-4">
               {notifications.length > 0 ? (
                 notifications.map((notification, index) => (
-                  <div key={notification.id || index} className="border rounded-lg p-4 hover:bg-gray-50">
+                  <div key={`notification-${notification.id}-${index}-${Date.now()}`} className="border rounded-lg p-4 hover:bg-gray-50">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
@@ -461,8 +463,8 @@ const CommunicationPage = () => {
                   required
                 >
                   <option value="">Select a student</option>
-                  {students.map((student) => (
-                    <option key={student.id} value={student.id}>
+                  {students.map((student, index) => (
+                    <option key={`student-${student.id}-${index}`} value={student.id}>
                       {student.first_name || student.prenom || 'Unknown'} {student.last_name || student.nom || 'Student'}
                     </option>
                   ))}
@@ -523,8 +525,8 @@ const CommunicationPage = () => {
                   size={5}
                   required
                 >
-                  {students.map((student) => (
-                    <option key={student.id} value={student.id}>
+                  {students.map((student, index) => (
+                    <option key={`student-${student.id}-${index}`} value={student.id}>
                       {student.first_name || student.prenom || 'Unknown'} {student.last_name || student.nom || 'Student'}
                     </option>
                   ))}
@@ -613,8 +615,8 @@ const CommunicationPage = () => {
                   required
                 >
                   <option value="">Select a student</option>
-                  {students.map((student) => (
-                    <option key={student.id} value={student.id}>
+                  {students.map((student, index) => (
+                    <option key={`student-${student.id}-${index}`} value={student.id}>
                       {student.first_name || student.prenom || 'Unknown'} {student.last_name || student.nom || 'Student'}
                     </option>
                   ))}
@@ -629,8 +631,8 @@ const CommunicationPage = () => {
                   required
                 >
                   <option value="">Select a course</option>
-                  {courses.map((course) => (
-                    <option key={course.id} value={course.id}>
+                  {courses.map((course, index) => (
+                    <option key={`course-${course.id}-${index}`} value={course.id}>
                       {course.name || course.title || `Course ${course.id}`}
                     </option>
                   ))}
@@ -669,3 +671,6 @@ const CommunicationPage = () => {
 };
 
 export default CommunicationPage;
+
+
+
