@@ -100,11 +100,17 @@ $router->post('/school-fees/create', 'FraisScolaireController@create');
 $router->get('/school-fees', 'FraisScolaireController@getAll');
 $router->get('/school-fees/{id}', 'FraisScolaireController@getById');
 
-// Communication routes
-$router->post('/communication/email', 'CommunicationController@sendEmail');
-$router->post('/communication/sms', 'CommunicationController@sendSMS');
-$router->post('/communication/message', 'CommunicationController@sendMessage');
-$router->get('/communication/messages', 'CommunicationController@getMessages');
+// Communication routes - using CommunicationController methods
+$router->post('/communication/email', 'CommunicationController@sendEmailNotification');
+$router->post('/communication/sms', 'CommunicationController@sendSMSNotification');
+$router->post('/communication/message', 'CommunicationController@sendInternalMessage');
+$router->post('/communication/broadcast', 'CommunicationController@broadcastNotification');
+
+// Bulletin generation route
+$router->post('/bulletin/generate', 'BulletinController@generate');
+
+// Notifications route
+$router->get('/notifications', 'NotificationController@getAll');
 
 // Financial routes
 $router->post('/payment/create', 'PaiementEleveController@create');
