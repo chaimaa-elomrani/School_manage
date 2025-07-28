@@ -16,7 +16,7 @@ class PlanningStrategy implements IPlanningStrategy
 
     public function __construct(PDO $pdo)
     {
-        $this->scheduleService = new ScheduleService($pdo);
+        $this->scheduleService = new ScheduleService();
     }
 
     public function plan(Course $course, Room $room, DateTime $date, string $startTime, string $endTime): Schedule

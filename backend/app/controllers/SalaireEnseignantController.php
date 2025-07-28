@@ -32,7 +32,7 @@ class SalaireEnseignantController
                 $salary->applyExtraFee($input['bonus']);
             }
             if (isset($input['deduction'])) {
-                $salary->applyDiscount($input['deduction']);
+                $salary->applyDeduction($input['deduction']);
             }
 
             $result = $this->salaryService->save($salary);

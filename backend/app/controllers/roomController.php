@@ -76,6 +76,7 @@ class RoomController
         }
 
         try {
+            $input['id'] = $id; // Add the ID to the input data
             $room = new Room($input);
             $result = $this->roomService->update($room);
             echo json_encode(['message' => 'Room updated successfully', 'data' => $result]);

@@ -31,6 +31,9 @@ class Grades {
         return $this->score;
     }
 
+    public function setId($id) {
+        $this->id = (int)$id;
+    }
 
     public function toArray() {
         return [

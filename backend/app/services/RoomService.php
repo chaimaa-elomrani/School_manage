@@ -17,7 +17,7 @@ class RoomService
     public function save(Room $room): array
     {
         $stmt = $this->pdo->prepare("INSERT INTO rooms (name, capacity, type) VALUES (?, ?, ?)");
-        $stmt->execute([$room->getName(), $room->getCapacity(), $room->getType()]);
+        $stmt->execute(params: [$room->getName(), $room->getCapacity(), $room->getType()]);
         
         return ['id' => $this->pdo->lastInsertId(), 'message' => 'Room saved successfully'];
     }
@@ -41,5 +41,19 @@ class RoomService
         }
         
         return $rooms;
+    }
+
+    public function update(Room $room): Room
+    {
+        $stmt = $this->pdo->prepare("UPDATE rooms SET name = ?, capacity = ?, type = ? WHERE id = ?");
+        $stmt->execute([$room->getName(), $room->getCapacity(), $room->getType(), $room->getId()]);
+        
+        return $room;
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM rooms WHERE id = ?");
+        return $stmt->execute([$id]);
     }
 }

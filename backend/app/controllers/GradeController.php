@@ -18,11 +18,6 @@ class GradeController
         } else {
             $pdo = Db::connection();
             $this->gradeService = new GradeService($pdo);
-            
-            // Attach observer
-            $notificationService = new NotificationService($pdo);
-            $observer = new GradeNotificationObserver($notificationService);
-            $this->gradeService->attach($observer);
         }
     }
 
@@ -35,8 +30,7 @@ class GradeController
         }
 
         try {
-            $grade = new Grades($input);
-            $result = $this->gradeService->save($grade);
+            $result = $this->gradeService->create($input);
             echo json_encode(['message' => 'Grade created successfully', 'data' => $result]);
             return $result;
         } catch (\Exception $e) {
@@ -53,8 +47,7 @@ class GradeController
         }
 
         try {
-            $grade = new Grades($input);
-            $result = $this->gradeService->update($grade);
+            $result = $this->gradeService->update($id);
             echo json_encode(['message' => 'Grade updated successfully', 'data' => $result]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
@@ -74,11 +67,7 @@ class GradeController
     public function getAll() {
         try {
             $grades = $this->gradeService->getAll();
-            $gradesArray = [];
-            foreach ($grades as $grade) {
-                $gradesArray[] = $grade->toArray();
-            }
-            echo json_encode(['message' => 'Grades retrieved successfully', 'data' => $gradesArray]);
+            echo json_encode(['message' => 'Grades retrieved successfully', 'data' => $grades]);
         } catch (\Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
@@ -89,7 +78,7 @@ class GradeController
         try {
             $grade = $this->gradeService->getById($id);
             if ($grade) {
-                echo json_encode(['message' => 'Grade found', 'data' => $grade->toArray()]);
+                echo json_encode(['message' => 'Grade found', 'data' => $grade]);
             } else {
                 echo json_encode(['error' => 'Grade not found']);
             }

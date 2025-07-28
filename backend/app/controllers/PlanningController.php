@@ -28,7 +28,7 @@ class PlanningController
             $this->planningStrategy = new PlanningStrategy($pdo);
             $this->courseService = new CourseService($pdo);
             $this->roomService = new RoomService($pdo);
-            $this->scheduleService = new ScheduleService($pdo);
+            $this->scheduleService = new ScheduleService();
         }
     }
 

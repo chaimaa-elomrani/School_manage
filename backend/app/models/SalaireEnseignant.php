@@ -104,4 +104,3 @@ class SalaireEnseignant implements IPaymentCalculator, IExtraFeeable, IPaymentSt
         return "Teacher salary for {$this->month}/{$this->year}";
     }
 }
-

@@ -101,4 +101,3 @@ class PaiementEleve implements IPaymentCalculator, IDiscountable, IExtraFeeable,
         return "Student payment for fee ID: {$this->fee_id}";
     }
 }
-

@@ -37,4 +37,6 @@ class Room
     public function getName() { return $this->name; }
     public function getCapacity() { return $this->capacity; }
     public function getLevel() { return $this->level; }
+    public function getType() { return $this->type; }
+    public function getEquipment() { return $this->equipment; }
 }

@@ -100,4 +100,3 @@ class FraisScolaire implements IPaymentCalculator, IDiscountable, IExtraFeeable
         ];
     }
 }
-

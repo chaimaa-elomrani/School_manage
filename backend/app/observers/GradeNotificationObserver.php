@@ -42,4 +42,3 @@ class GradeNotificationObserver implements IObserver
     }
 }
 
-
