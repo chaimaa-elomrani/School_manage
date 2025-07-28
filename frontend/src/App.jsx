@@ -11,6 +11,7 @@ import Layout from './components/layout/Layout';
 import TeacherList from './components/teachers/TeacherList';
 import CourseList from './components/courses/CourseList';
 import ScheduleList from './components/schedules/ScheduleList';
+import FinancePage from './components/finance/FinancePage';
 import './App.css';
 
 // Protected Route Component
@@ -125,7 +126,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <div className="text-center py-12">Finance Page Coming Soon...</div>
+                    <FinancePage />
                   </Layout>
                 </ProtectedRoute>
               } 
