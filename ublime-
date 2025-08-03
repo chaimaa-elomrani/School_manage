@@ -1,0 +1,65 @@
+[33mbd519c9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m installed phpmailer and fixed the courses presentation in the admin dashboard
+[33m2e9d71f[m installed phpmailer and fixed the courses presentation in the admin dashboard
+[33m9999db4[m removed the twilio secret from teh code
+[33m0305c4a[m fixing the communication controll ,  and the authentication system plus try to configurate the student user dashboard
+[33m85b5526[m[33m ([m[1;31morigin/main[m[33m)[m fixed the sent of the email to teh users from the page communications
+[33m0752c35[m installed php mailar and librairies to support the email sent etc , returned to the old version after the crush of the application
+[33mcb9a5d0[m added the communication page content
+[33mfd1aa63[m added the finance page in the dashboard of the admistrator
+[33m0a6be44[m added the schedule in the front end with the controll from the backend plus the some updates in some pages to ameliorate the style
+[33m3f50aa2[m fixed the show of the teacher informations in the front end teacherList component
+[33m2042175[m updating the files controlling the courses to go with the studture of the courses we have in the database
+[33maa6bada[m added the needes controllers and services for the payment or enrolements for exemple , added the routes in web.php and update in the dashboard to dubug the retreivement of the data from the database
+[33ma23cb4d[m added  teh dashboards of the student , the teacher , the administrator , added the sidebar , update of the login page , addeed all the pages that we need in the front end ,made the connection with the backend  (this version is not stable )
+[33ma22b62f[m added a sidebar
+[33mcae842d[m added the authetification controll files in the front end ,plus the components of  login and register plus the dashboard one to test
+[33m7e38068[m added the connection with the backend and the authservice to manipulate the user data from the front end to the backend
+[33mbab4be6[m added the authentication system and tested the endpoints
+[33mb502b27[m debuging
+[33m5446c76[m implemented the notifications system and communication system with the facade design pattern , with a flexible broadcasting allowing to send to multiple individulas
+[33m33f4e83[m added the communication facade and communication interface
+[33m6bbd494[m added the mssaging service
+[33m19c5ad8[m added the SMS channel service
+[33m5c368b1[m added the email channel service
+[33m4a16b4e[m added the mssgs  model
+[33mb8675d5[m added the motifications model
+[33m1ff0d9c[m added the interfaces needed fot the part o the messages and sms channel etc
+[33m1aaf3d1[m added the decorator design pattern in the payment system  by adding abstract classes and interfaces for the dynamic addition of behaviours in the different actions have in the payment systm
+[33m52bac14[m implemented the isp and dip principles by creating focused interfaces that classes implement only when they need specific functionnality , and the dip is implements by injecting the services into the controllers as always so that the systeme goes in a flexible way
+[33mfc0fe80[m added the routes
+[33m63c45f0[m added the controllers for those later models and services
+[33m245fede[m added the services for teachersalary , stdentpayment and scholar fees
+[33ma29a1ec[m added scolar fees model
+[33mb5c0951[m added the teacherSalary model
+[33m4d577cd[m added the the ipayable interface and the studentpaiment model
+[33m5668e66[m implementing the observer and templete design patterns for the bulletin and grades
+[33me3ee423[m added the strategy design pattern to the tables courses and schedule
+[33m6867628[m debuging all the methods and tested the endpoints
+[33m69f5b52[m added the routes of all the controllers , evaluations , grades ,and bulletin
+[33md9d0590[m addd the controller of the evaluation , implementing the services method
+[33m487f979[m addd the controller of the grates  , implementing the services method
+[33mb3e6ad8[m addd the controller of the bulettin , implementing the services method
+[33mdf90d04[m added the bulletin methods in the services , plus some changes in the other services
+[33ma1d9c4f[m added the service methods for the grades table
+[33maade1b3[m added the services method for evaluations
+[33me7aae1e[m added the models of the grades , bulletin , and the evaluations
+[33m926b50f[m updating the room model and services based on the new structure  of the table rooms in the database
+[33m57d0804[m added the implementation of the strategy design pattern so that we can create the plannings based on availability , we can cancel , plan and get conflits , also with an planning strategy that allows to suggest other day or other room if this later is not available
+[33mce22bdc[m added the schedule controller methods
+[33m11946a7[m added the room controller methods
+[33mdc21d5a[m added the course controller methods
+[33m29faeba[m added the services of the those models courses, rooms , schedule
+[33m2344313[m added the models with the implimentation of the interfaces methods for the courses , the rooms and the schedule
+[33m12df7de[m added the interfaces for courses, rooms ,schedule and the planning strategy interface , plus the models
+[33m53f08c7[m debogage of teacher methods and testing the routes of this later
+[33m932473d[m debuging the student methods and testing everything with postman
+[33me1896e0[m added the teacher controller methods using the ones in the service of the teacher
+[33m3d35114[m added the student controller methods using the logic of the student service
+[33m77049b7[m added the teacher service where the methods logic exists
+[33mc2cf512[m added the student service where the logic of the methods exists
+[33m89e1b5c[m added the connection with the database and the router
+[33med54b92[m added the PersonFactory and the student and teacher models with the implementation of all the methods in the implemented interface
+[33m52dcf46[m setting up the interfaces
+[33m15736b0[m added the sql schema
+[33m8389824[m project frontend and backend configuration
+[33mb131a0b[m first commit

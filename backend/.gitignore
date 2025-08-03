@@ -1,7 +1,23 @@
-# This is the .gitignore file for the project
-
-# Ignore environment file
 .env
+backend/.env
+backend/config/sms.php
+**/config/sms.php
 
-# Ignore SMS configuration file
-config/sms.php
+# Dependencies
+/node_modules/
+/vendor/
+/backend/vendor/
+/frontend/node_modules/
+
+# Build files
+/dist/
+/build/
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
