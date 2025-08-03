@@ -1,0 +1,5 @@
+.git
+.env
+backend/config/sms.php
+vendor
+node_modules
